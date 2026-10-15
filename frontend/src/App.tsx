@@ -89,8 +89,8 @@ export const App: React.FC = () => {
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {loading ? (
           <div style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)' }}>
-            <div style={{ display: 'inline-block', width: '32px', height: '32px', border: '3px solid rgba(99, 102, 241, 0.2)', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '14px' }} />
-            <p>Loading research workspace...</p>
+            <div style={{ display: 'inline-block', width: '32px', height: '32px', border: '3px solid rgba(255, 255, 255, 0.15)', borderTopColor: '#ffffff', borderRadius: '50%', animation: 'spinSlow 0.9s linear infinite', marginBottom: '14px' }} />
+            <p style={{ color: '#71717a', fontSize: '0.85rem' }}>Loading research workspace...</p>
           </div>
         ) : currentPaper ? (
           <div>

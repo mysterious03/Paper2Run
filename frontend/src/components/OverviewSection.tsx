@@ -11,50 +11,45 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ overview }) =>
     {
       title: 'Problem & Objective',
       content: overview.research_problem,
-      icon: <Target size={18} color="#38bdf8" />,
-      accentColor: '#38bdf8',
+      icon: <Target size={16} color="#ffffff" />,
     },
     {
       title: 'Proposed Method & Motivation',
       content: overview.motivation_and_method,
-      icon: <Lightbulb size={18} color="#818cf8" />,
-      accentColor: '#818cf8',
+      icon: <Lightbulb size={16} color="#ffffff" />,
     },
     {
       title: 'Main Model Architecture',
       content: overview.main_architecture,
-      icon: <Cpu size={18} color="#a855f7" />,
-      accentColor: '#a855f7',
+      icon: <Cpu size={16} color="#ffffff" />,
     },
     {
       title: 'Experimental Findings',
       content: overview.main_results,
-      icon: <Award size={18} color="#34d399" />,
-      accentColor: '#34d399',
+      icon: <Award size={16} color="#ffffff" />,
     },
     {
-      title: 'Limitations & Reproduction Ambiguities',
+      title: 'Limitations & Uncertainties',
       content: overview.limitations_and_questions,
-      icon: <AlertCircle size={18} color="#fb7185" />,
-      accentColor: '#fb7185',
+      icon: <AlertCircle size={16} color="#ffffff" />,
     },
   ];
 
   return (
     <div style={{ marginBottom: '28px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff' }}>
+        <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.02em' }}>
           Executive Research Overview
         </h2>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          (Grounded in extracted paper text)
+        <span style={{ fontSize: '0.72rem', color: '#71717a' }}>
+          (Grounded in extracted paper evidence)
         </span>
       </div>
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '14px'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+        gap: '12px'
       }}>
         {cards.map((card, idx) => (
           <div
@@ -62,21 +57,33 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ overview }) =>
             className="glass-card"
             style={{
               padding: '16px',
-              borderTop: `3px solid ${card.accentColor}`,
+              borderTop: '2px solid rgba(255, 255, 255, 0.4)',
               display: 'flex',
               flexDirection: 'column',
-              gap: '10px'
+              gap: '10px',
+              background: '#0d0d0d'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {card.icon}
-              <h3 style={{ fontSize: '0.88rem', fontWeight: 700, color: '#f1f5f9' }}>
+              <div style={{
+                background: '#18181b',
+                width: '28px',
+                height: '28px',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid rgba(255, 255, 255, 0.12)'
+              }}>
+                {card.icon}
+              </div>
+              <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em' }}>
                 {card.title}
               </h3>
             </div>
             <p style={{
-              fontSize: '0.82rem',
-              color: 'var(--text-secondary)',
+              fontSize: '0.8rem',
+              color: '#a1a1aa',
               lineHeight: 1.55,
               flexGrow: 1
             }}>

@@ -17,13 +17,13 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const categories = [
-    { id: 'all', label: 'All Fields' },
+    { id: 'all', label: 'All Parameters' },
     { id: 'dataset', label: 'Dataset & Preprocessing' },
     { id: 'model_architecture', label: 'Architecture' },
     { id: 'optimizer', label: 'Optimizer & Schedule' },
     { id: 'training_setup', label: 'Training Setup' },
     { id: 'loss', label: 'Loss Function' },
-    { id: 'evaluation', label: 'Evaluation & Results' },
+    { id: 'evaluation', label: 'Evaluation & Benchmarks' },
     { id: 'environment', label: 'Environment' }
   ];
 
@@ -59,76 +59,96 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
         marginBottom: '16px'
       }}>
         <div>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff' }}>
-            Experiment Blueprint
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.02em' }}>
+            Structured Experiment Blueprint
           </h2>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-            Evidence-backed parameters verified against extracted PDF source text.
+          <p style={{ fontSize: '0.76rem', color: '#71717a' }}>
+            Evidence-backed parameters verified against raw PDF source text.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <input
             type="text"
-            placeholder="Filter parameters..."
+            placeholder="Search parameters..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
-              background: 'rgba(15, 23, 42, 0.8)',
-              border: '1px solid var(--border-subtle)',
+              background: '#0a0a0a',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
               borderRadius: '6px',
               padding: '6px 12px',
-              color: '#fff',
-              fontSize: '0.82rem',
+              color: '#ffffff',
+              fontSize: '0.78rem',
               outline: 'none',
-              width: '180px'
+              width: '190px',
+              transition: 'all 0.15s ease'
             }}
           />
         </div>
       </div>
 
-      {/* Category Pills */}
+      {/* Category Pills - Sleek Minimalist Controls */}
       <div style={{
         display: 'flex',
-        gap: '6px',
+        gap: '5px',
         overflowX: 'auto',
         paddingBottom: '8px',
         marginBottom: '14px'
       }}>
-        {categories.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => setSelectedCategory(c.id)}
-            style={{
-              background: selectedCategory === c.id ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-              color: selectedCategory === c.id ? '#818cf8' : 'var(--text-secondary)',
-              border: selectedCategory === c.id ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid var(--border-subtle)',
-              padding: '4px 12px',
-              borderRadius: '20px',
-              fontSize: '0.76rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            {c.label}
-          </button>
-        ))}
+        {categories.map((c) => {
+          const isSelected = selectedCategory === c.id;
+          return (
+            <button
+              key={c.id}
+              onClick={() => setSelectedCategory(c.id)}
+              style={{
+                background: isSelected ? '#ffffff' : '#0d0d0d',
+                color: isSelected ? '#000000' : '#a1a1aa',
+                border: isSelected ? '1px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.1)',
+                padding: '4px 12px',
+                borderRadius: '20px',
+                fontSize: '0.74rem',
+                fontWeight: isSelected ? 600 : 500,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s ease',
+                boxShadow: isSelected ? '0 1px 6px rgba(255,255,255,0.2)' : 'none'
+              }}
+              onMouseEnter={(e) => {
+                if (!isSelected) {
+                  e.currentTarget.style.color = '#ffffff';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                  e.currentTarget.style.background = '#141414';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSelected) {
+                  e.currentTarget.style.color = '#a1a1aa';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.background = '#0d0d0d';
+                }
+              }}
+            >
+              {c.label}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Blueprint Table */}
-      <div className="glass-panel" style={{ overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.83rem' }}>
+      {/* Blueprint Spec Sheet Table */}
+      <div className="glass-panel" style={{ overflow: 'hidden', background: '#0a0a0a' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
           <thead>
             <tr style={{
-              background: 'rgba(15, 23, 42, 0.95)',
-              borderBottom: '1px solid var(--border-subtle)',
-              color: 'var(--text-muted)',
-              fontSize: '0.72rem',
+              background: '#070707',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#71717a',
+              fontSize: '0.7rem',
               textTransform: 'uppercase',
               letterSpacing: '0.05em'
             }}>
-              <th style={{ padding: '12px 16px', width: '22%' }}>Field / Parameter</th>
+              <th style={{ padding: '12px 16px', width: '22%' }}>Parameter</th>
               <th style={{ padding: '12px 16px', width: '28%' }}>Extracted Value</th>
               <th style={{ padding: '12px 16px', width: '15%' }}>Status</th>
               <th style={{ padding: '12px 16px', width: '23%' }}>Source Provenance</th>
@@ -144,20 +164,24 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
                 <tr
                   key={field.id}
                   style={{
-                    borderBottom: '1px solid var(--border-subtle)',
-                    transition: 'background 0.15s ease'
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                    transition: 'all 0.15s ease'
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                  }}
                 >
                   {/* Field Name & Category */}
-                  <td style={{ padding: '14px 16px', verticalAlign: 'top' }}>
-                    <div style={{ fontWeight: 700, color: '#f8fafc', marginBottom: '2px' }}>
+                  <td style={{ padding: '12px 16px', verticalAlign: 'top' }}>
+                    <div style={{ fontWeight: 600, color: '#ffffff', marginBottom: '2px', letterSpacing: '-0.01em' }}>
                       {field.name}
                     </div>
                     <span style={{
-                      fontSize: '0.7rem',
-                      color: 'var(--text-muted)',
+                      fontSize: '0.68rem',
+                      color: '#71717a',
                       textTransform: 'uppercase',
                       fontFamily: 'var(--font-mono)'
                     }}>
@@ -166,31 +190,34 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
                   </td>
 
                   {/* Value */}
-                  <td style={{ padding: '14px 16px', verticalAlign: 'top' }}>
+                  <td style={{ padding: '12px 16px', verticalAlign: 'top' }}>
                     {field.value !== null ? (
                       <span style={{
                         fontFamily: 'var(--font-mono)',
-                        color: '#38bdf8',
-                        background: 'rgba(56, 189, 248, 0.06)',
-                        padding: '3px 6px',
+                        color: '#ffffff',
+                        background: '#141414',
+                        border: '1px solid rgba(255, 255, 255, 0.12)',
+                        padding: '3px 8px',
                         borderRadius: '4px',
                         display: 'inline-block',
                         maxWidth: '100%',
                         wordBreak: 'break-word',
-                        lineHeight: 1.4
+                        lineHeight: 1.4,
+                        fontSize: '0.78rem'
                       }}>
                         {field.value}
                       </span>
                     ) : (
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                         <span style={{
-                          color: '#fb7185',
+                          color: '#71717a',
                           fontFamily: 'var(--font-mono)',
-                          fontSize: '0.75rem',
-                          background: 'rgba(244, 63, 94, 0.1)',
-                          padding: '3px 8px',
+                          fontSize: '0.7rem',
+                          background: '#0d0d0d',
+                          border: '1px dashed #27272a',
+                          padding: '2px 6px',
                           borderRadius: '4px',
-                          fontWeight: 600
+                          fontWeight: 500
                         }}>
                           UNKNOWN / NOT REPORTED
                         </span>
@@ -198,70 +225,79 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
                     )}
 
                     {field.notes && field.notes.length > 0 && (
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                        ℹ️ {field.notes[0]}
+                      <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '4px' }}>
+                        {field.notes[0]}
                       </div>
                     )}
                   </td>
 
                   {/* Status Badge */}
-                  <td style={{ padding: '14px 16px', verticalAlign: 'top' }}>
+                  <td style={{ padding: '12px 16px', verticalAlign: 'top' }}>
                     {getStatusBadge(field.status)}
                   </td>
 
-                  {/* Evidence Citation */}
-                  <td style={{ padding: '14px 16px', verticalAlign: 'top' }}>
+                  {/* Evidence / Citation */}
+                  <td style={{ padding: '12px 16px', verticalAlign: 'top' }}>
                     {firstEvidence ? (
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: '#a1a1aa' }}>
                           <span style={{
-                            fontSize: '0.7rem',
-                            fontWeight: 700,
-                            color: firstEvidence.quote_match ? '#34d399' : '#fbbf24',
-                            background: firstEvidence.quote_match ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+                            fontSize: '0.68rem',
+                            background: '#141414',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             padding: '1px 5px',
-                            borderRadius: '3px'
+                            borderRadius: '3px',
+                            fontFamily: 'var(--font-mono)',
+                            color: '#ffffff'
                           }}>
-                            Page {firstEvidence.page_index + 1}
+                            p.{firstEvidence.page_index}
                           </span>
-                          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                            {firstEvidence.section}
-                          </span>
+                          <span style={{ fontWeight: 500 }}>{firstEvidence.section}</span>
                         </div>
                         <p style={{
-                          fontSize: '0.75rem',
-                          color: 'var(--text-secondary)',
+                          fontSize: '0.73rem',
+                          color: '#71717a',
                           fontStyle: 'italic',
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
+                          marginTop: '3px',
+                          lineHeight: 1.35,
+                          maxWidth: '280px',
                           overflow: 'hidden',
-                          lineHeight: 1.35
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
                         }}>
                           "{firstEvidence.quote}"
                         </p>
                       </div>
                     ) : (
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                        No passage citation found
+                      <span style={{ color: '#52525b', fontSize: '0.73rem', fontStyle: 'italic' }}>
+                        No direct quote citation
                       </span>
                     )}
                   </td>
 
                   {/* Actions */}
-                  <td style={{ padding: '14px 16px', verticalAlign: 'top', textAlign: 'right' }}>
-                    <div style={{ display: 'inline-flex', gap: '6px' }}>
+                  <td style={{ padding: '12px 16px', verticalAlign: 'top', textAlign: 'right' }}>
+                    <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
                       <button
                         onClick={() => onSelectFieldForLearn(field)}
                         className="btn-ghost"
                         style={{
-                          background: 'rgba(99, 102, 241, 0.12)',
-                          color: '#818cf8',
+                          fontSize: '0.73rem',
                           padding: '4px 8px',
-                          fontSize: '0.75rem',
-                          fontWeight: 600
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          borderRadius: '4px'
                         }}
-                        title="Click to learn this concept (Beginner / Technical / Math)"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#ffffff';
+                          e.currentTarget.style.color = '#000000';
+                          e.currentTarget.style.borderColor = '#ffffff';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent';
+                          e.currentTarget.style.color = '#a1a1aa';
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                        }}
+                        title="Open interactive 3-tier explanation"
                       >
                         <BookOpen size={13} />
                         <span>Learn</span>
@@ -272,11 +308,22 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
                           onClick={() => onSelectFieldForEvidence(field)}
                           className="btn-ghost"
                           style={{
-                            background: 'rgba(255, 255, 255, 0.05)',
+                            fontSize: '0.73rem',
                             padding: '4px 8px',
-                            fontSize: '0.75rem'
+                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            borderRadius: '4px'
                           }}
-                          title="Inspect exact quoted evidence in PDF text"
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#ffffff';
+                            e.currentTarget.style.color = '#000000';
+                            e.currentTarget.style.borderColor = '#ffffff';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.color = '#a1a1aa';
+                            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                          }}
+                          title="View verified verbatim quote in document context"
                         >
                           <FileSearch size={13} />
                           <span>Proof</span>

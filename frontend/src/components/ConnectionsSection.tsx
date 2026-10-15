@@ -19,32 +19,6 @@ export const ConnectionsSection: React.FC<ConnectionsSectionProps> = ({ graph, o
   const outgoingEdges = graph.edges.filter((e) => e.source === selectedNodeId);
   const incomingEdges = graph.edges.filter((e) => e.target === selectedNodeId);
 
-  const getNodeColor = (type: string) => {
-    switch (type) {
-      case 'research_objective':
-        return '#38bdf8';
-      case 'method':
-        return '#818cf8';
-      case 'model_architecture':
-        return '#a855f7';
-      case 'dataset':
-      case 'preprocessing_step':
-        return '#10b981';
-      case 'optimizer':
-      case 'learning_rate_schedule':
-      case 'training_procedure':
-        return '#f59e0b';
-      case 'loss_function':
-        return '#ec4899';
-      case 'evaluation_metric':
-        return '#06b6d4';
-      case 'reproduction_gap':
-        return '#fb7185';
-      default:
-        return '#94a3b8';
-    }
-  };
-
   // Compute visual 2D positions for SVG Topology Canvas
   const nodePositions = useMemo(() => {
     const total = graph.nodes.length;
@@ -87,88 +61,87 @@ export const ConnectionsSection: React.FC<ConnectionsSectionProps> = ({ graph, o
       {/* Section Header & View Mode Switcher */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff' }}>
-            Research Connection Graph
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.02em' }}>
+            Research Topology Graph
           </h2>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-            Grounded topological network linking research objectives, architecture, training dynamics, and reproduction gaps.
+          <p style={{ fontSize: '0.76rem', color: '#71717a' }}>
+            Topological network linking objectives, architecture, training dynamics, and reproduction gaps.
           </p>
         </div>
 
         {/* View Switcher */}
         <div style={{
           display: 'flex',
-          background: 'rgba(15, 23, 42, 0.9)',
+          background: '#0d0d0d',
           padding: '3px',
-          borderRadius: '8px',
-          border: '1px solid var(--border-subtle)'
+          borderRadius: '6px',
+          border: '1px solid rgba(255, 255, 255, 0.08)'
         }}>
           <button
             onClick={() => setViewMode('visual')}
             style={{
-              background: viewMode === 'visual' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-              color: viewMode === 'visual' ? '#fff' : 'var(--text-secondary)',
-              border: viewMode === 'visual' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
-              borderRadius: '6px',
-              padding: '6px 12px',
-              fontSize: '0.78rem',
-              fontWeight: 600,
+              background: viewMode === 'visual' ? '#ffffff' : 'transparent',
+              color: viewMode === 'visual' ? '#000000' : '#a1a1aa',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '5px 12px',
+              fontSize: '0.76rem',
+              fontWeight: viewMode === 'visual' ? 600 : 500,
               display: 'flex',
               alignItems: 'center',
-              gap: '6px'
+              gap: '6px',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
             }}
           >
-            <Network size={14} />
-            <span>Interactive Canvas</span>
+            <Network size={13} />
+            <span>Topology Canvas</span>
           </button>
           <button
             onClick={() => setViewMode('navigator')}
             style={{
-              background: viewMode === 'navigator' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-              color: viewMode === 'navigator' ? '#fff' : 'var(--text-secondary)',
-              border: viewMode === 'navigator' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
-              borderRadius: '6px',
-              padding: '6px 12px',
-              fontSize: '0.78rem',
-              fontWeight: 600,
+              background: viewMode === 'navigator' ? '#ffffff' : 'transparent',
+              color: viewMode === 'navigator' ? '#000000' : '#a1a1aa',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '5px 12px',
+              fontSize: '0.76rem',
+              fontWeight: viewMode === 'navigator' ? 600 : 500,
               display: 'flex',
               alignItems: 'center',
-              gap: '6px'
+              gap: '6px',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
             }}
           >
-            <ListTree size={14} />
+            <ListTree size={13} />
             <span>Entity Navigator</span>
           </button>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.45fr 1fr', gap: '20px' }}>
-        {/* Left Column: Visual Canvas OR Entity Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.8fr) 1.2fr', gap: '16px' }}>
+        {/* Left Side: Interactive Canvas or List */}
         {viewMode === 'visual' ? (
-          <div className="glass-panel" style={{ padding: '16px', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-                Topological Vector Graph ({graph.nodes.length} Nodes • {graph.edges.length} Edges)
-              </span>
-              <span style={{ fontSize: '0.7rem', color: '#38bdf8' }}>
-                ● Click any node or vector to highlight
-              </span>
-            </div>
-
-            {/* SVG Visual Canvas */}
+          <div className="glass-panel" style={{
+            position: 'relative',
+            height: '520px',
+            overflow: 'hidden',
+            background: '#050505',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backgroundImage: 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
             <svg
               viewBox="0 0 760 480"
-              style={{
-                width: '100%',
-                height: '460px',
-                background: 'radial-gradient(circle at center, rgba(30, 41, 59, 0.4) 0%, rgba(9, 13, 22, 0.95) 100%)',
-                borderRadius: '8px',
-                border: '1px solid var(--border-subtle)'
-              }}
+              style={{ width: '100%', height: '100%', overflow: 'visible' }}
             >
               <defs>
                 <marker
-                  id="arrow"
+                  id="arrow-white"
                   viewBox="0 0 10 10"
                   refX="18"
                   refY="5"
@@ -176,66 +149,66 @@ export const ConnectionsSection: React.FC<ConnectionsSectionProps> = ({ graph, o
                   markerHeight="6"
                   orient="auto-start-reverse"
                 >
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#818cf8" opacity="0.8" />
+                  <path d="M 0 1 L 9 5 L 0 9 z" fill="#ffffff" />
                 </marker>
                 <marker
-                  id="arrow-active"
+                  id="arrow-dim"
                   viewBox="0 0 10 10"
                   refX="18"
                   refY="5"
-                  markerWidth="7"
-                  markerHeight="7"
+                  markerWidth="5"
+                  markerHeight="5"
                   orient="auto-start-reverse"
                 >
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+                  <path d="M 0 1 L 9 5 L 0 9 z" fill="rgba(255, 255, 255, 0.25)" />
                 </marker>
+                <filter id="white-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
               </defs>
 
-              {/* Render Connecting Edges */}
-              {graph.edges.map((e) => {
-                const src = nodePositions[e.source];
-                const dst = nodePositions[e.target];
-                if (!src || !dst) return null;
+              {/* Render Connecting Bezier Edges */}
+              {graph.edges.map((edge) => {
+                const srcPos = nodePositions[edge.source];
+                const tgtPos = nodePositions[edge.target];
+                if (!srcPos || !tgtPos) return null;
 
-                const isConnected = e.source === selectedNodeId || e.target === selectedNodeId;
-                const midX = (src.x + dst.x) / 2;
-                const midY = (src.y + dst.y) / 2 - 20;
+                const isConnectedToSelected =
+                  edge.source === selectedNodeId || edge.target === selectedNodeId;
+
+                // Curved cubic Bezier vector
+                const dx = tgtPos.x - srcPos.x;
+                const dy = tgtPos.y - srcPos.y;
+                const cx1 = srcPos.x + dx * 0.4;
+                const cy1 = srcPos.y - 20;
+                const cx2 = srcPos.x + dx * 0.6;
+                const cy2 = tgtPos.y + 20;
+                const pathD = `M ${srcPos.x} ${srcPos.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${tgtPos.x} ${tgtPos.y}`;
 
                 return (
-                  <g key={e.id}>
+                  <g key={edge.id}>
                     <path
-                      d={`M ${src.x} ${src.y} Q ${midX} ${midY} ${dst.x} ${dst.y}`}
+                      d={pathD}
                       fill="none"
-                      stroke={isConnected ? '#38bdf8' : 'rgba(148, 163, 184, 0.25)'}
-                      strokeWidth={isConnected ? 2.5 : 1.2}
-                      strokeDasharray={e.provenance_type === 'inferred' ? '4 3' : 'none'}
-                      markerEnd={isConnected ? 'url(#arrow-active)' : 'url(#arrow)'}
-                      style={{ transition: 'all 0.2s ease' }}
+                      stroke={isConnectedToSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.12)'}
+                      strokeWidth={isConnectedToSelected ? 2.2 : 1.2}
+                      strokeDasharray={edge.provenance_type === 'inferred' ? '4 3' : 'none'}
+                      markerEnd={isConnectedToSelected ? 'url(#arrow-white)' : 'url(#arrow-dim)'}
+                      filter={isConnectedToSelected ? 'url(#white-glow)' : 'none'}
+                      style={{ transition: 'all 0.25s ease' }}
                     />
-                    {isConnected && (
-                      <text
-                        x={midX}
-                        y={midY}
-                        fill="#c7d2fe"
-                        fontSize="9"
-                        textAnchor="middle"
-                        fontFamily="var(--font-mono)"
-                        style={{ pointerEvents: 'none', background: '#090d16' }}
-                      >
-                        {e.type}
-                      </text>
-                    )}
                   </g>
                 );
               })}
 
-              {/* Render Nodes */}
+              {/* Render Interactive Nodes */}
               {graph.nodes.map((node) => {
                 const pos = nodePositions[node.id];
                 if (!pos) return null;
 
                 const isSelected = node.id === selectedNodeId;
-                const color = getNodeColor(node.type);
+                const isGap = node.type === 'reproduction_gap';
 
                 return (
                   <g
@@ -244,119 +217,116 @@ export const ConnectionsSection: React.FC<ConnectionsSectionProps> = ({ graph, o
                     onClick={() => setSelectedNodeId(node.id)}
                     style={{ cursor: 'pointer' }}
                   >
-                    {/* Glowing Aura if selected */}
+                    {/* Outer Glow Halo on selected */}
                     {isSelected && (
                       <circle
-                        r="32"
-                        fill={color}
-                        opacity="0.25"
-                        style={{ filter: 'blur(8px)' }}
+                        r={26}
+                        fill="none"
+                        stroke="#ffffff"
+                        strokeWidth={1.5}
+                        strokeDasharray="4 3"
+                        style={{ animation: 'spinSlow 10s linear infinite' }}
                       />
                     )}
 
-                    <rect
-                      x="-65"
-                      y="-22"
-                      width="130"
-                      height="44"
-                      rx="8"
-                      fill={isSelected ? '#1e293b' : '#0f172a'}
-                      stroke={isSelected ? color : 'rgba(255, 255, 255, 0.15)'}
-                      strokeWidth={isSelected ? 2 : 1}
-                    />
-
-                    {/* Small Status indicator pip */}
+                    {/* Main Node Circle */}
                     <circle
-                      cx="-52"
-                      cy="0"
-                      r="4"
-                      fill={color}
+                      r={18}
+                      fill={isSelected ? '#ffffff' : '#0d0d0d'}
+                      stroke={isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.25)'}
+                      strokeWidth={isSelected ? 3 : 1.5}
+                      filter={isSelected ? 'url(#white-glow)' : 'none'}
+                      style={{ transition: 'all 0.2s ease' }}
                     />
 
-                    <text
-                      x="-42"
-                      y="-4"
-                      fill="#fff"
-                      fontSize="9.5"
-                      fontWeight="700"
-                      fontFamily="var(--font-sans)"
-                    >
-                      {node.label.length > 15 ? `${node.label.substring(0, 15)}...` : node.label}
-                    </text>
+                    {/* Node Core Indicator */}
+                    <circle
+                      r={6}
+                      fill={isSelected ? '#000000' : '#ffffff'}
+                    />
 
+                    {/* Node Label Below */}
                     <text
-                      x="-42"
-                      y="11"
-                      fill={color}
-                      fontSize="8"
-                      fontFamily="var(--font-mono)"
-                      style={{ textTransform: 'uppercase' }}
+                      y={32}
+                      textAnchor="middle"
+                      fill={isSelected ? '#ffffff' : '#a1a1aa'}
+                      fontSize={11}
+                      fontWeight={isSelected ? 700 : 500}
+                      fontFamily="var(--font-sans)"
+                      style={{ pointerEvents: 'none', userSelect: 'none' }}
                     >
-                      {node.type.length > 16 ? `${node.type.substring(0, 16)}..` : node.type.replace('_', ' ')}
+                      {node.label.length > 20 ? node.label.substring(0, 18) + '...' : node.label}
                     </text>
                   </g>
                 );
               })}
             </svg>
+
+            {/* Canvas Hint */}
+            <div style={{
+              position: 'absolute',
+              bottom: '12px',
+              left: '16px',
+              fontSize: '0.7rem',
+              color: '#71717a',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'rgba(0, 0, 0, 0.7)',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              border: '1px solid rgba(255, 255, 255, 0.08)'
+            }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ffffff' }} />
+              <span>Click any node to focus topology flow</span>
+            </div>
           </div>
         ) : (
-          /* Entity Navigator Grid */
-          <div className="glass-panel" style={{ padding: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                Extracted Nodes ({graph.nodes.length})
-              </span>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                Click any node to trace relationships
-              </span>
+          /* Entity Navigator List */
+          <div className="glass-panel" style={{ padding: '16px', maxHeight: '520px', overflowY: 'auto', background: '#0a0a0a' }}>
+            <div style={{ fontSize: '0.72rem', color: '#71717a', textTransform: 'uppercase', fontWeight: 600, marginBottom: '10px' }}>
+              All Extracted Entities ({graph.nodes.length})
             </div>
-
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-              gap: '10px',
-              maxHeight: '440px',
-              overflowY: 'auto'
-            }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {graph.nodes.map((node) => {
                 const isSelected = node.id === selectedNodeId;
-                const color = getNodeColor(node.type);
-
                 return (
                   <div
                     key={node.id}
                     onClick={() => setSelectedNodeId(node.id)}
                     style={{
-                      background: isSelected ? 'rgba(99, 102, 241, 0.25)' : 'rgba(15, 23, 42, 0.7)',
-                      border: isSelected ? `2px solid ${color}` : '1px solid var(--border-subtle)',
-                      borderRadius: '8px',
-                      padding: '12px',
+                      padding: '10px 12px',
+                      borderRadius: '6px',
+                      background: isSelected ? 'rgba(255, 255, 255, 0.08)' : '#0d0d0d',
+                      border: isSelected ? '1px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.06)',
                       cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
                       transition: 'all 0.15s ease'
                     }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                        e.currentTarget.style.background = '#141414';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+                        e.currentTarget.style.background = '#0d0d0d';
+                      }
+                    }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <span style={{
-                        fontSize: '0.65rem',
-                        fontWeight: 700,
-                        color: color,
-                        textTransform: 'uppercase',
-                        fontFamily: 'var(--font-mono)'
-                      }}>
-                        {node.type.replace('_', ' ')}
-                      </span>
-                      <span className={`status-badge status-${node.status}`} style={{ fontSize: '0.6rem', padding: '1px 4px' }}>
-                        {node.status}
-                      </span>
-                    </div>
-                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#fff', marginBottom: '4px' }}>
-                      {node.label}
-                    </div>
-                    {node.value && (
-                      <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {node.value}
+                    <div>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#ffffff' }}>
+                        {node.label}
                       </div>
-                    )}
+                      <div style={{ fontSize: '0.7rem', color: '#71717a', textTransform: 'uppercase' }}>
+                        {node.type.replace('_', ' ')}
+                      </div>
+                    </div>
+                    <ArrowRight size={14} color={isSelected ? '#ffffff' : '#71717a'} />
                   </div>
                 );
               })}
@@ -364,162 +334,159 @@ export const ConnectionsSection: React.FC<ConnectionsSectionProps> = ({ graph, o
           </div>
         )}
 
-        {/* Right Column: Node Provenance & Connected Edges */}
-        <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* Right Side: Selected Node Focus Inspector */}
+        <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#0a0a0a' }}>
           {selectedNode ? (
-            <>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <span style={{
+                  fontSize: '0.68rem',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  fontFamily: 'var(--font-mono)',
+                  textTransform: 'uppercase'
+                }}>
+                  {selectedNode.type.replace('_', ' ')}
+                </span>
+                <span style={{
+                  fontSize: '0.68rem',
+                  color: '#71717a',
+                  border: '1px solid #27272a',
+                  padding: '1px 6px',
+                  borderRadius: '3px'
+                }}>
+                  NODE ID: {selectedNode.id}
+                </span>
+              </div>
+
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em', marginBottom: '10px' }}>
+                {selectedNode.label}
+              </h3>
+
+              <p style={{ fontSize: '0.82rem', color: '#a1a1aa', lineHeight: 1.55, marginBottom: '18px' }}>
+                {selectedNode.value ? `Value: ${selectedNode.value}` : `Extracted entity node for ${selectedNode.label}`}
+              </p>
+
+              {/* Direct Action: Jump to Learn */}
+              <button
+                onClick={() => onLearnConcept(selectedNode.id)}
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center', marginBottom: '20px' }}
+              >
+                <BookOpen size={14} />
+                <span>Deep Dive in Paper2Run Learn</span>
+              </button>
+
+              {/* Connected Relationships (Outbound & Inbound) */}
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                  <span style={{
-                    fontSize: '0.7rem',
-                    fontWeight: 700,
-                    color: getNodeColor(selectedNode.type),
-                    textTransform: 'uppercase',
-                    fontFamily: 'var(--font-mono)'
-                  }}>
-                    {selectedNode.type.replace('_', ' ')}
-                  </span>
-                  <span className={`status-badge status-${selectedNode.status}`}>
-                    {selectedNode.status}
-                  </span>
+                <div style={{ fontSize: '0.72rem', color: '#71717a', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.04em', marginBottom: '8px' }}>
+                  Connected Vectors ({outgoingEdges.length + incomingEdges.length})
                 </div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>
-                  {selectedNode.label}
-                </h3>
-                {selectedNode.value && (
-                  <p style={{ fontSize: '0.82rem', color: '#38bdf8', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
-                    {selectedNode.value}
-                  </p>
-                )}
-                <div style={{ marginTop: '12px' }}>
-                  <button
-                    onClick={() => onLearnConcept(selectedNode.id)}
-                    className="btn-primary"
-                    style={{ fontSize: '0.78rem', padding: '6px 12px' }}
-                  >
-                    <BookOpen size={13} />
-                    <span>Explain in Learn Tab</span>
-                  </button>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {outgoingEdges.map((e) => {
+                    const targetNode = graph.nodes.find((n) => n.id === e.target);
+                    return (
+                      <div
+                        key={e.id}
+                        onClick={() => setSelectedNodeId(e.target)}
+                        style={{
+                          padding: '8px 12px',
+                          background: '#0d0d0d',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                          e.currentTarget.style.background = '#141414';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                          e.currentTarget.style.background = '#0d0d0d';
+                        }}
+                      >
+                        <div>
+                          <div style={{ fontSize: '0.7rem', color: '#ffffff', fontWeight: 600 }}>
+                            → {(e.label || e.type).replace('_', ' ').toUpperCase()}
+                          </div>
+                          <div style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>
+                            {targetNode?.label || e.target}
+                          </div>
+                        </div>
+                        <span style={{
+                          fontSize: '0.62rem',
+                          background: '#18181b',
+                          color: '#71717a',
+                          padding: '1px 5px',
+                          borderRadius: '3px'
+                        }}>
+                          {e.provenance_type}
+                        </span>
+                      </div>
+                    );
+                  })}
+
+                  {incomingEdges.map((e) => {
+                    const srcNode = graph.nodes.find((n) => n.id === e.source);
+                    return (
+                      <div
+                        key={e.id}
+                        onClick={() => setSelectedNodeId(e.source)}
+                        style={{
+                          padding: '8px 12px',
+                          background: '#0d0d0d',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                          e.currentTarget.style.background = '#141414';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                          e.currentTarget.style.background = '#0d0d0d';
+                        }}
+                      >
+                        <div>
+                          <div style={{ fontSize: '0.7rem', color: '#a1a1aa', fontWeight: 600 }}>
+                            ← {(e.label || e.type).replace('_', ' ').toUpperCase()} (FROM)
+                          </div>
+                          <div style={{ fontSize: '0.78rem', color: '#ffffff' }}>
+                            {srcNode?.label || e.source}
+                          </div>
+                        </div>
+                        <span style={{
+                          fontSize: '0.62rem',
+                          background: '#18181b',
+                          color: '#71717a',
+                          padding: '1px 5px',
+                          borderRadius: '3px'
+                        }}>
+                          {e.provenance_type}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-
-              {/* Outgoing Edges */}
-              <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '14px' }}>
-                <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
-                  Outgoing Relationships ({outgoingEdges.length})
-                </h4>
-                {outgoingEdges.length === 0 ? (
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                    No outgoing relationships.
-                  </p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {outgoingEdges.map((e) => {
-                      const targetNode = graph.nodes.find((n) => n.id === e.target);
-                      return (
-                        <div
-                          key={e.id}
-                          onClick={() => targetNode && setSelectedNodeId(targetNode.id)}
-                          style={{
-                            background: 'rgba(255, 255, 255, 0.03)',
-                            border: '1px solid var(--border-subtle)',
-                            borderRadius: '6px',
-                            padding: '8px 12px',
-                            fontSize: '0.78rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          <div>
-                            <span style={{ color: '#818cf8', fontWeight: 600, marginRight: '6px' }}>
-                              --[{e.type}]--&gt;
-                            </span>
-                            <span style={{ color: '#fff', fontWeight: 700 }}>
-                              {targetNode?.label || e.target}
-                            </span>
-                            {e.label && (
-                              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                                {e.label}
-                              </div>
-                            )}
-                          </div>
-                          <span style={{
-                            fontSize: '0.62rem',
-                            background: e.provenance_type === 'explicit' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                            color: e.provenance_type === 'explicit' ? '#34d399' : '#fbbf24',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            fontWeight: 600
-                          }}>
-                            {e.provenance_type.toUpperCase()}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Incoming Edges */}
-              <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '14px' }}>
-                <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
-                  Incoming Relationships ({incomingEdges.length})
-                </h4>
-                {incomingEdges.length === 0 ? (
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                    No incoming relationships.
-                  </p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {incomingEdges.map((e) => {
-                      const sourceNode = graph.nodes.find((n) => n.id === e.source);
-                      return (
-                        <div
-                          key={e.id}
-                          onClick={() => sourceNode && setSelectedNodeId(sourceNode.id)}
-                          style={{
-                            background: 'rgba(255, 255, 255, 0.03)',
-                            border: '1px solid var(--border-subtle)',
-                            borderRadius: '6px',
-                            padding: '8px 12px',
-                            fontSize: '0.78rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          <div>
-                            <span style={{ color: '#38bdf8', fontWeight: 700, marginRight: '6px' }}>
-                              {sourceNode?.label || e.source}
-                            </span>
-                            <span style={{ color: 'var(--text-muted)' }}>
-                              --[{e.type}]--&gt;
-                            </span>
-                          </div>
-                          <span style={{
-                            fontSize: '0.62rem',
-                            background: e.provenance_type === 'explicit' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                            color: e.provenance_type === 'explicit' ? '#34d399' : '#fbbf24',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            fontWeight: 600
-                          }}>
-                            {e.provenance_type.toUpperCase()}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </>
+            </div>
           ) : (
-            <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>
-              Select a node to inspect its incoming and outgoing relationships.
-            </p>
+            <div style={{ textAlign: 'center', padding: '40px 0', color: '#71717a' }}>
+              Select a node to inspect relationships.
+            </div>
           )}
         </div>
       </div>

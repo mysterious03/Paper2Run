@@ -98,376 +98,403 @@ export const LearningPanel: React.FC<LearningPanelProps> = ({
       title: '5. Inverse Square-Root Warmup Schedule',
       role: 'Early training stabilization & annealing',
       type: 'Optimization Schedule',
-      fieldCategory: 'learning_rate_schedule',
-      summary: 'Prevents divergent gradient updates in initial uncalibrated epochs before decaying gradually.',
-      provenance: 'Explicitly reported in document'
-    },
-    {
-      id: 'prereq_smoothing',
-      title: '6. Label Smoothing Regularization',
-      role: 'Calibrated output probabilities & generalization',
-      type: 'Regularization',
-      fieldCategory: 'loss',
-      summary: 'Prevents the network from becoming overconfident on target tokens, improving generalization BLEU.',
+      fieldCategory: 'optimizer',
+      summary: 'Linearly increases learning rate during early steps to prevent divergent step sizes before moments stabilize.',
       provenance: 'Explicitly reported in document'
     }
   ];
 
-  if (!activeField) {
-    return (
-      <div className="glass-panel" style={{ padding: '40px', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text-muted)' }}>Select any blueprint field to begin learning.</p>
-      </div>
-    );
-  }
-
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '20px', alignItems: 'start' }}>
-      {/* Sidebar: Available Concepts from Blueprint */}
-      <div className="glass-panel" style={{ padding: '16px', maxHeight: '720px', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Blueprint Concepts
-          </span>
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-            {allFields.length}
-          </span>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {allFields.map((f) => {
-            const isSelected = activeField.id === f.id && panelMode === 'concept';
-            return (
-              <button
-                key={f.id}
-                onClick={() => {
-                  onSelectField(f);
-                  setPanelMode('concept');
-                }}
-                style={{
-                  textAlign: 'left',
-                  background: isSelected ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-                  border: isSelected ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
-                  color: isSelected ? '#fff' : 'var(--text-secondary)',
-                  padding: '8px 10px',
-                  borderRadius: '6px',
-                  fontSize: '0.78rem',
-                  fontWeight: isSelected ? 600 : 400,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {f.name}
-                </span>
-                <span className={`status-badge status-${f.status}`} style={{ fontSize: '0.62rem', padding: '1px 4px' }}>
-                  {f.status}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Main Learning Canvas */}
-      <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {/* Navigation Mode Switcher: Concept vs Prerequisites Roadmap */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              onClick={() => setPanelMode('concept')}
-              style={{
-                background: panelMode === 'concept' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-                color: panelMode === 'concept' ? '#fff' : 'var(--text-secondary)',
-                border: panelMode === 'concept' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
-                borderRadius: '6px',
-                padding: '6px 14px',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-            >
-              <BookOpen size={14} />
-              <span>Grounded Explanation</span>
-            </button>
-            <button
-              onClick={() => setPanelMode('prerequisites')}
-              style={{
-                background: panelMode === 'prerequisites' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-                color: panelMode === 'prerequisites' ? '#fff' : 'var(--text-secondary)',
-                border: panelMode === 'prerequisites' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
-                borderRadius: '6px',
-                padding: '6px 14px',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-            >
-              <GitMerge size={14} />
-              <span>Prerequisites Roadmap</span>
-            </button>
-          </div>
-
-          {panelMode === 'concept' && (
-            /* 3-Tier Level Selector */
-            <div style={{
+    <div style={{ marginBottom: '32px' }}>
+      {/* Top Controls: Explainer vs Prerequisites Switcher */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '16px',
+        flexWrap: 'wrap',
+        gap: '12px'
+      }}>
+        <div style={{
+          display: 'flex',
+          background: '#0d0d0d',
+          padding: '3px',
+          borderRadius: '6px',
+          border: '1px solid rgba(255, 255, 255, 0.08)'
+        }}>
+          <button
+            onClick={() => setPanelMode('concept')}
+            style={{
+              background: panelMode === 'concept' ? '#ffffff' : 'transparent',
+              color: panelMode === 'concept' ? '#000000' : '#a1a1aa',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '6px 14px',
+              fontSize: '0.78rem',
+              fontWeight: panelMode === 'concept' ? 600 : 500,
+              cursor: 'pointer',
               display: 'flex',
-              background: 'rgba(15, 23, 42, 0.9)',
-              padding: '3px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-subtle)'
-            }}>
-              {[
-                { id: 'beginner', label: 'Beginner', icon: <GraduationCap size={14} /> },
-                { id: 'technical', label: 'Technical Intuition', icon: <Cpu size={14} /> },
-                { id: 'math', label: 'Mathematical Deep Dive', icon: <Binary size={14} /> }
-              ].map((btn) => (
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <BookOpen size={14} />
+            <span>Concept Explainer</span>
+          </button>
+          <button
+            onClick={() => setPanelMode('prerequisites')}
+            style={{
+              background: panelMode === 'prerequisites' ? '#ffffff' : 'transparent',
+              color: panelMode === 'prerequisites' ? '#000000' : '#a1a1aa',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '6px 14px',
+              fontSize: '0.78rem',
+              fontWeight: panelMode === 'prerequisites' ? 600 : 500,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <GitMerge size={14} />
+            <span>Prerequisites Roadmap</span>
+          </button>
+        </div>
+
+        {panelMode === 'concept' && (
+          /* 3-Tier Depth Selector */
+          <div style={{
+            display: 'flex',
+            gap: '4px',
+            background: '#0d0d0d',
+            padding: '3px',
+            borderRadius: '6px',
+            border: '1px solid rgba(255, 255, 255, 0.08)'
+          }}>
+            {[
+              { id: 'beginner', label: 'Beginner', icon: <GraduationCap size={13} /> },
+              { id: 'technical', label: 'Technical Intuition', icon: <Cpu size={13} /> },
+              { id: 'math', label: 'Mathematical Deep Dive', icon: <Binary size={13} /> }
+            ].map((btn) => {
+              const isSelected = level === btn.id;
+              return (
                 <button
                   key={btn.id}
                   onClick={() => setLevel(btn.id as any)}
                   style={{
-                    background: level === btn.id ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'transparent',
-                    color: level === btn.id ? '#fff' : 'var(--text-secondary)',
+                    background: isSelected ? '#ffffff' : 'transparent',
+                    color: isSelected ? '#000000' : '#a1a1aa',
                     border: 'none',
-                    borderRadius: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.78rem',
-                    fontWeight: level === btn.id ? 700 : 500,
+                    borderRadius: '4px',
+                    padding: '5px 12px',
+                    fontSize: '0.76rem',
+                    fontWeight: isSelected ? 600 : 500,
+                    cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    boxShadow: level === btn.id ? '0 2px 8px rgba(99, 102, 241, 0.3)' : 'none'
+                    gap: '5px',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.color = '#ffffff';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.color = '#a1a1aa';
+                      e.currentTarget.style.background = 'transparent';
+                    }
                   }}
                 >
                   {btn.icon}
                   <span>{btn.label}</span>
                 </button>
-              ))}
-            </div>
-          )}
-        </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-        {panelMode === 'prerequisites' ? (
-          /* Prerequisites Roadmap View */
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div style={{ background: 'rgba(99, 102, 241, 0.08)', border: '1px solid rgba(99, 102, 241, 0.25)', borderRadius: '8px', padding: '14px 18px' }}>
-              <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#c7d2fe', marginBottom: '4px' }}>
-                Blueprint-Derived Prerequisite Learning Sequence
-              </h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                Derived from the extracted model architecture and optimization dynamics. Check off concepts you already master to tailor your reproduction study plan.
-              </p>
-            </div>
+      {panelMode === 'prerequisites' ? (
+        /* Prerequisites Roadmap View */
+        <div className="glass-panel" style={{ padding: '24px', background: '#0a0a0a' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em', marginBottom: '4px' }}>
+              Execution & Understanding Prerequisites
+            </h3>
+            <p style={{ fontSize: '0.78rem', color: '#71717a' }}>
+              Mastery roadmap grounded in the paper's extracted architectural and mathematical dependencies.
+            </p>
+          </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {prerequisites.map((p) => {
-                const isKnown = !!knownPrereqs[p.id];
-                return (
-                  <div
-                    key={p.id}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {prerequisites.map((p) => {
+              const isDone = Boolean(knownPrereqs[p.id]);
+              return (
+                <div
+                  key={p.id}
+                  style={{
+                    background: isDone ? 'rgba(255, 255, 255, 0.02)' : '#0d0d0d',
+                    border: isDone ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '14px',
+                    transition: 'all 0.2s ease',
+                    opacity: isDone ? 0.65 : 1
+                  }}
+                >
+                  <button
                     onClick={() => togglePrereq(p.id)}
                     style={{
-                      background: isKnown ? 'rgba(16, 185, 129, 0.06)' : 'rgba(15, 23, 42, 0.75)',
-                      border: isKnown ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid var(--border-subtle)',
-                      borderRadius: '8px',
-                      padding: '14px 18px',
+                      background: 'transparent',
+                      border: 'none',
+                      color: isDone ? '#ffffff' : '#71717a',
                       cursor: 'pointer',
-                      display: 'flex',
-                      gap: '14px',
-                      alignItems: 'flex-start',
+                      padding: 0,
+                      marginTop: '2px',
                       transition: 'all 0.15s ease'
                     }}
+                    title={isDone ? 'Mark as pending' : 'Mark as understood'}
                   >
-                    <div style={{ marginTop: '2px' }}>
-                      {isKnown ? (
-                        <CheckSquare size={18} color="#10b981" />
-                      ) : (
-                        <Square size={18} color="#64748b" />
-                      )}
+                    {isDone ? <CheckSquare size={18} color="#ffffff" /> : <Square size={18} />}
+                  </button>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <span style={{
+                        fontSize: '0.88rem',
+                        fontWeight: 700,
+                        color: isDone ? '#a1a1aa' : '#ffffff',
+                        textDecoration: isDone ? 'line-through' : 'none'
+                      }}>
+                        {p.title}
+                      </span>
+                      <span style={{
+                        fontSize: '0.65rem',
+                        background: '#18181b',
+                        color: '#a1a1aa',
+                        padding: '1px 6px',
+                        borderRadius: '3px',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        textTransform: 'uppercase'
+                      }}>
+                        {p.type}
+                      </span>
                     </div>
 
-                    <div style={{ flexGrow: 1 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
-                        <span style={{
-                          fontWeight: 700,
-                          fontSize: '0.88rem',
-                          color: isKnown ? '#34d399' : '#fff',
-                          textDecoration: isKnown ? 'line-through' : 'none'
-                        }}>
-                          {p.title}
-                        </span>
-                        <span style={{ fontSize: '0.68rem', background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-muted)', padding: '2px 6px', borderRadius: '4px' }}>
-                          {p.type}
-                        </span>
-                      </div>
-                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.45, marginBottom: '6px' }}>
-                        {p.summary}
-                      </p>
-                      <div style={{ fontSize: '0.72rem', color: '#818cf8' }}>
-                        • Provenance: {p.provenance}
-                      </div>
+                    <p style={{ fontSize: '0.8rem', color: isDone ? '#71717a' : '#a1a1aa', lineHeight: 1.5, marginBottom: '6px' }}>
+                      {p.summary}
+                    </p>
+
+                    <div style={{ fontSize: '0.7rem', color: '#71717a', fontStyle: 'italic' }}>
+                      Source: {p.provenance}
                     </div>
                   </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        /* Concept Explainer Split View */
+        <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '16px' }}>
+          {/* Left Column: Parameter List */}
+          <div className="glass-panel" style={{ padding: '14px', maxHeight: '640px', overflowY: 'auto', background: '#0a0a0a' }}>
+            <div style={{ fontSize: '0.68rem', color: '#71717a', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.04em', marginBottom: '8px' }}>
+              Select Blueprint Concept
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {allFields.map((field) => {
+                const isSelected = activeField?.id === field.id;
+                return (
+                  <button
+                    key={field.id}
+                    onClick={() => onSelectField(field)}
+                    style={{
+                      textAlign: 'left',
+                      padding: '8px 10px',
+                      borderRadius: '5px',
+                      background: isSelected ? '#ffffff' : '#0d0d0d',
+                      color: isSelected ? '#000000' : '#a1a1aa',
+                      border: isSelected ? '1px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.06)',
+                      fontSize: '0.78rem',
+                      fontWeight: isSelected ? 600 : 400,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.color = '#ffffff';
+                        e.currentTarget.style.background = '#141414';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.color = '#a1a1aa';
+                        e.currentTarget.style.background = '#0d0d0d';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+                      }
+                    }}
+                  >
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {field.name}
+                    </span>
+                    <ArrowRight size={12} color={isSelected ? '#000000' : '#71717a'} />
+                  </button>
                 );
               })}
             </div>
           </div>
-        ) : (
-          /* Concept Explanation View */
-          <div>
-            <div style={{ marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <span className={`status-badge status-${activeField.status}`}>
-                  {activeField.status.replace('_', ' ')}
-                </span>
-                <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                  Category: {activeField.category}
-                </span>
-              </div>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff' }}>
-                {activeField.name}
-              </h2>
-              {activeField.value && (
-                <div style={{ fontSize: '0.85rem', color: '#38bdf8', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
-                  Extracted Setting: {activeField.value}
-                </div>
-              )}
-            </div>
 
+          {/* Right Column: Detailed Explanation Canvas */}
+          <div className="glass-panel" style={{ padding: '24px', background: '#0a0a0a', minHeight: '400px' }}>
             {loading ? (
-              <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                <div style={{ display: 'inline-block', width: '28px', height: '28px', border: '3px solid rgba(99, 102, 241, 0.2)', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '12px' }} />
-                <p>Formulating grounded {level} explanation...</p>
+              <div style={{ textAlign: 'center', padding: '80px 0', color: '#71717a' }}>
+                <div style={{
+                  display: 'inline-block',
+                  width: '28px',
+                  height: '28px',
+                  border: '2px solid rgba(255, 255, 255, 0.15)',
+                  borderTopColor: '#ffffff',
+                  borderRadius: '50%',
+                  animation: 'spinSlow 0.9s linear infinite',
+                  marginBottom: '12px'
+                }} />
+                <p style={{ fontSize: '0.82rem' }}>Synthesizing {level} explanation...</p>
               </div>
             ) : error ? (
-              <div style={{ padding: '20px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', color: '#f87171' }}>
-                {error}
+              <div style={{ textAlign: 'center', padding: '60px 0', color: '#71717a' }}>
+                <p>Failed to load explanation: {error}</p>
               </div>
-            ) : explanation ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                {/* Core Summary Card */}
-                <div style={{
-                  background: 'rgba(99, 102, 241, 0.08)',
-                  border: '1px solid rgba(99, 102, 241, 0.2)',
-                  borderRadius: '8px',
-                  padding: '14px 18px',
-                  fontSize: '0.92rem',
-                  fontWeight: 600,
-                  color: '#c7d2fe',
-                  lineHeight: 1.5
-                }}>
-                  💡 {explanation.summary}
-                </div>
-
-                {/* Deep Explanation */}
-                <div>
-                  <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
-                    Explanation ({explanation.explanation_level.toUpperCase()})
-                  </h3>
-                  <p style={{ fontSize: '0.88rem', color: '#f1f5f9', lineHeight: 1.65, whiteSpace: 'pre-line' }}>
-                    {explanation.content}
-                  </p>
-                </div>
-
-                {/* Math Formulation Block (If available) */}
-                {explanation.math_formulation && (
-                  <div style={{
-                    background: 'rgba(0, 0, 0, 0.4)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: '8px',
-                    padding: '14px 18px'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: '#a855f7', fontSize: '0.78rem', fontWeight: 700 }}>
-                      <Binary size={14} />
-                      <span>Mathematical Formalism & Equations</span>
-                    </div>
-                    <pre style={{
+            ) : explanation && activeField ? (
+              <div>
+                {/* Header */}
+                <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px', marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <span style={{
+                      fontSize: '0.68rem',
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      color: '#ffffff',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.82rem',
-                      color: '#e2e8f0',
-                      overflowX: 'auto',
-                      lineHeight: 1.5
+                      textTransform: 'uppercase'
                     }}>
-                      {explanation.math_formulation}
-                    </pre>
+                      {activeField.category.replace('_', ' ')}
+                    </span>
+                    <span style={{ fontSize: '0.72rem', color: '#71717a' }}>
+                      Current Value: <strong style={{ color: '#ffffff' }}>{activeField.value || 'Not reported'}</strong>
+                    </span>
                   </div>
-                )}
 
-                {/* Concrete Analogy or Example */}
-                {explanation.analogies_or_examples && (
-                  <div style={{
-                    background: 'rgba(6, 182, 212, 0.06)',
-                    border: '1px solid rgba(6, 182, 212, 0.2)',
-                    borderRadius: '8px',
-                    padding: '12px 16px',
-                    fontSize: '0.82rem',
-                    color: '#a5f3fc'
-                  }}>
-                    <strong>Intuitive Analogy:</strong> {explanation.analogies_or_examples}
-                  </div>
-                )}
-
-                {/* Critical Reproduction Tip */}
-                <div style={{
-                  background: 'rgba(245, 158, 11, 0.08)',
-                  border: '1px solid rgba(245, 158, 11, 0.25)',
-                  borderRadius: '8px',
-                  padding: '12px 16px',
-                  display: 'flex',
-                  gap: '10px',
-                  alignItems: 'flex-start'
-                }}>
-                  <AlertTriangle size={18} color="#fbbf24" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <div>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#fbbf24', textTransform: 'uppercase' }}>
-                      Reproduction Implementation Warning
-                    </div>
-                    <div style={{ fontSize: '0.82rem', color: '#fef3c7', marginTop: '2px', lineHeight: 1.45 }}>
-                      {explanation.reproduction_note}
-                    </div>
-                  </div>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
+                    {activeField.name}
+                  </h3>
                 </div>
 
-                {/* Source Quotes from the Paper */}
-                {explanation.related_evidence && explanation.related_evidence.length > 0 && (
-                  <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '14px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 700 }}>
-                      <Quote size={14} />
-                      <span>Verified Textual Citations From Document</span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {explanation.related_evidence.map((ev, i) => (
-                        <div key={i} style={{
-                          background: 'rgba(15, 23, 42, 0.6)',
-                          border: '1px solid var(--border-subtle)',
-                          borderRadius: '6px',
-                          padding: '10px 14px',
-                          fontSize: '0.78rem'
-                        }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', color: '#38bdf8' }}>
-                            <span>Page {ev.page_index + 1} • {ev.section}</span>
-                            <span style={{ color: ev.quote_match ? '#34d399' : '#fbbf24', fontWeight: 600 }}>
-                              {ev.quote_match ? '✓ Verifiable Quote Match' : '⚠ Off-page / Needs Review'}
-                            </span>
-                          </div>
-                          <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.4 }}>
-                            "{ev.quote}"
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                {/* Explanation Content */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  {/* Intuition / High-level explanation */}
+                  <div>
+                    <h4 style={{ fontSize: '0.82rem', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>
+                      {level === 'beginner' ? 'Intuitive Analogy' : level === 'technical' ? 'Technical Mechanism & Convergence' : 'Mathematical Formulation'}
+                    </h4>
+                    <p style={{ fontSize: '0.86rem', color: '#e4e4e7', lineHeight: 1.65, marginBottom: '10px' }}>
+                      {explanation.summary}
+                    </p>
+                    <p style={{ fontSize: '0.82rem', color: '#a1a1aa', lineHeight: 1.6 }}>
+                      {explanation.content}
+                    </p>
                   </div>
-                )}
+
+                  {/* Math / Technical Deep Dive Equations */}
+                  {explanation.math_formulation && (
+                    <div style={{
+                      background: '#050505',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      borderRadius: '6px',
+                      padding: '16px'
+                    }}>
+                      <div style={{ fontSize: '0.72rem', color: '#71717a', textTransform: 'uppercase', fontWeight: 600, marginBottom: '6px' }}>
+                        Rigorous Equations & Symbols
+                      </div>
+                      <div style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '0.85rem',
+                        color: '#ffffff',
+                        lineHeight: 1.6,
+                        whiteSpace: 'pre-wrap'
+                      }}>
+                        {explanation.math_formulation}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Practical Reproduction Warning */}
+                  {explanation.reproduction_note && (
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px dashed rgba(255, 255, 255, 0.18)',
+                      borderRadius: '6px',
+                      padding: '14px 16px'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                        <AlertTriangle size={15} color="#ffffff" />
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          Practical Reproduction Warning
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '0.8rem', color: '#a1a1aa', lineHeight: 1.55 }}>
+                        {explanation.reproduction_note}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Author Quote vs Background Knowledge Attribution */}
+                  <div style={{
+                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                    paddingTop: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    fontSize: '0.72rem',
+                    color: '#71717a'
+                  }}>
+                    <span style={{
+                      background: '#141414',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#ffffff',
+                      padding: '2px 6px',
+                      borderRadius: '3px',
+                      fontWeight: 600
+                    }}>
+                      HONEST ATTRIBUTION
+                    </span>
+                    <span>
+                      {explanation.is_author_reported
+                        ? `Directly reported by paper authors in examined document text.`
+                        : 'Derived from formal ML background knowledge (not explicitly cited by authors).'}
+                    </span>
+                  </div>
+                </div>
               </div>
             ) : null}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

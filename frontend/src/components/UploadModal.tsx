@@ -74,8 +74,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.75)',
-      backdropFilter: 'blur(8px)',
+      background: 'rgba(0, 0, 0, 0.85)',
+      backdropFilter: 'blur(12px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -83,12 +83,12 @@ export const UploadModal: React.FC<UploadModalProps> = ({
       padding: '20px'
     }}>
       <div className="glass-panel" style={{
-        background: '#0f172a',
+        background: '#0a0a0a',
         width: '100%',
         maxWidth: '560px',
-        borderRadius: '12px',
-        border: '1px solid var(--border-accent)',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+        borderRadius: '10px',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 255, 255, 0.05)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden'
@@ -96,21 +96,21 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         {/* Header */}
         <div style={{
           padding: '18px 24px',
-          borderBottom: '1px solid var(--border-subtle)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
           <div>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
               Upload Research Paper
             </h3>
-            <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '0.72rem', color: '#71717a' }}>
               Text-based AI/ML PDF format (arXiv, NeurIPS, ICML, ICLR, CVPR)
             </p>
           </div>
           <button onClick={onClose} className="btn-ghost" disabled={loading} style={{ borderRadius: '50%', padding: '6px' }}>
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
@@ -122,11 +122,11 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             onDrop={handleDrop}
             onClick={() => inputRef.current?.click()}
             style={{
-              border: dragOver ? '2px dashed #6366f1' : '2px dashed var(--border-subtle)',
-              borderRadius: '10px',
+              border: dragOver ? '2px dashed #ffffff' : '2px dashed rgba(255, 255, 255, 0.15)',
+              borderRadius: '8px',
               padding: '36px 20px',
               textAlign: 'center',
-              background: dragOver ? 'rgba(99, 102, 241, 0.08)' : 'rgba(15, 23, 42, 0.5)',
+              background: dragOver ? 'rgba(255, 255, 255, 0.05)' : '#050505',
               cursor: 'pointer',
               transition: 'all 0.2s ease'
             }}
@@ -140,35 +140,36 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             />
 
             <div style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '12px',
-              background: 'rgba(99, 102, 241, 0.15)',
-              color: '#818cf8',
+              width: '44px',
+              height: '44px',
+              borderRadius: '8px',
+              background: '#141414',
+              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto 12px'
             }}>
-              <UploadCloud size={26} />
+              <UploadCloud size={22} color="#ffffff" />
             </div>
 
             {file ? (
               <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#38bdf8' }}>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#ffffff' }}>
                   {file.name}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '4px' }}>
                   {(file.size / (1024 * 1024)).toFixed(2)} MB • Ready to analyze
                 </div>
               </div>
             ) : (
               <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#f8fafc' }}>
-                  Drag & drop your PDF here, or <span style={{ color: '#38bdf8' }}>browse</span>
+                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#ffffff' }}>
+                  Drag & drop your PDF here, or <span style={{ textDecoration: 'underline' }}>browse</span>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '6px' }}>
-                  PyMuPDF will parse page-level text, equations, and section headings.
+                <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '6px' }}>
+                  Extracts page-indexed text, architecture parameters, and verified quotes.
                 </div>
               </div>
             )}
@@ -176,18 +177,18 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
           {error && (
             <div style={{
-              background: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: '8px',
-              padding: '14px 18px',
+              background: '#141414',
+              border: '1px solid #3f3f46',
+              borderRadius: '6px',
+              padding: '12px 16px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '10px',
-              color: '#f87171',
-              fontSize: '0.82rem'
+              gap: '8px',
+              color: '#e4e4e7',
+              fontSize: '0.78rem'
             }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                <AlertCircle size={16} color="#ffffff" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <span style={{ lineHeight: 1.5 }}>{error}</span>
               </div>
               {onOpenSettings && error.includes('API Key') && (
@@ -196,9 +197,9 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                     type="button"
                     onClick={onOpenSettings}
                     className="btn-primary"
-                    style={{ padding: '6px 12px', fontSize: '0.78rem' }}
+                    style={{ padding: '6px 12px', fontSize: '0.74rem' }}
                   >
-                    <Key size={13} />
+                    <Key size={12} />
                     <span>Open API Key Settings</span>
                   </button>
                 </div>
@@ -209,22 +210,22 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           {/* Processing Indicator */}
           {loading && (
             <div style={{
-              background: 'rgba(99, 102, 241, 0.1)',
-              border: '1px solid rgba(99, 102, 241, 0.25)',
-              borderRadius: '8px',
+              background: '#0d0d0d',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '6px',
               padding: '14px 18px',
-              fontSize: '0.82rem',
-              color: '#c7d2fe'
+              fontSize: '0.8rem',
+              color: '#ffffff'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                <div style={{ width: '16px', height: '16px', border: '2px solid rgba(99, 102, 241, 0.3)', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                <strong>Processing Paper Workflow...</strong>
+                <div style={{ width: '16px', height: '16px', border: '2px solid rgba(255, 255, 255, 0.2)', borderTopColor: '#ffffff', borderRadius: '50%', animation: 'spinSlow 0.9s linear infinite' }} />
+                <strong>Running Live Extraction Workflow...</strong>
               </div>
-              <ul style={{ paddingLeft: '24px', lineHeight: 1.5, fontSize: '0.76rem', color: 'var(--text-secondary)' }}>
+              <ul style={{ paddingLeft: '24px', lineHeight: 1.5, fontSize: '0.74rem', color: '#a1a1aa' }}>
                 <li>Parsing page-indexed text blocks via PyMuPDF...</li>
                 <li>Extracting experiment parameters and source quotes...</li>
                 <li>Running deterministic quote verification...</li>
-                <li>Constructing Research Connection Graph...</li>
+                <li>Constructing Research Topology Graph...</li>
               </ul>
             </div>
           )}
@@ -233,7 +234,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         {/* Footer */}
         <div style={{
           padding: '14px 24px',
-          borderTop: '1px solid var(--border-subtle)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          background: '#070707',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
@@ -248,7 +250,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             style={{ opacity: (!file || loading) ? 0.6 : 1 }}
           >
             <span>{loading ? 'Analyzing Paper...' : 'Extract & Analyze'}</span>
-            <ArrowRight size={15} />
+            <ArrowRight size={14} />
           </button>
         </div>
       </div>

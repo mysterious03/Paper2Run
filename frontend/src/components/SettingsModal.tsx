@@ -74,8 +74,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.75)',
-      backdropFilter: 'blur(8px)',
+      background: 'rgba(0, 0, 0, 0.85)',
+      backdropFilter: 'blur(12px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -83,175 +83,204 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       padding: '20px'
     }}>
       <div className="glass-panel" style={{
-        background: '#0f172a',
+        background: '#0a0a0a',
         width: '100%',
         maxWidth: '620px',
-        borderRadius: '12px',
-        border: '1px solid var(--border-accent)',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
+        borderRadius: '10px',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 255, 255, 0.05)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden'
       }}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px',
-          borderBottom: '1px solid var(--border-subtle)',
+          padding: '18px 24px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{
-              background: 'rgba(99, 102, 241, 0.15)',
-              padding: '8px',
-              borderRadius: '8px',
-              color: '#818cf8'
+              background: '#ffffff',
+              width: '30px',
+              height: '30px',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}>
-              <Key size={20} />
+              <Key size={15} color="#000000" />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff' }}>
-                AI Engine & API Key Configuration
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
+                AI Engine & Provider Setup
               </h3>
-              <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
-                Configure real-time research extraction and pedagogical explanations.
+              <p style={{ fontSize: '0.72rem', color: '#71717a' }}>
+                Required for real-time live extraction on uploaded PDFs
               </p>
             </div>
           </div>
           <button onClick={onClose} className="btn-ghost" style={{ borderRadius: '50%', padding: '6px' }}>
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
         {/* Body */}
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Active Status Card */}
-          <div style={{
-            background: 'rgba(15, 23, 42, 0.7)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '8px',
-            padding: '14px 18px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
-                Active LLM Provider
+          {/* Current Status */}
+          {keyStatus && (
+            <div style={{
+              background: '#050505',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '6px',
+              padding: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.68rem', color: '#71717a', textTransform: 'uppercase', fontWeight: 600 }}>
+                  Active Extraction Engine
+                </div>
+                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                  <span>{keyStatus.active_provider}</span>
+                  {keyStatus.gemini_configured || keyStatus.openai_configured || keyStatus.anthropic_configured ? (
+                    <span style={{ fontSize: '0.65rem', background: '#141414', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', padding: '1px 6px', borderRadius: '3px' }}>
+                      CONFIGURED
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: '0.65rem', background: '#141414', border: '1px solid #3f3f46', color: '#a1a1aa', padding: '1px 6px', borderRadius: '3px' }}>
+                      NOT CONFIGURED
+                    </span>
+                  )}
+                </div>
               </div>
-              <div style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: keyStatus?.active_provider && keyStatus?.active_provider !== 'Not Configured' ? '#10b981' : '#f59e0b'
-                }} />
-                <span>{keyStatus?.active_provider || 'Not Configured'}</span>
-              </div>
-            </div>
 
-            <button
-              onClick={handleTestOnly}
-              className="btn-secondary"
-              disabled={testing}
-              style={{ fontSize: '0.78rem', padding: '6px 12px' }}
-            >
-              <RefreshCw size={13} className={testing ? 'animate-spin' : ''} />
-              <span>{testing ? 'Testing...' : 'Test Connection'}</span>
-            </button>
-          </div>
+              <button
+                onClick={handleTestOnly}
+                disabled={testing}
+                className="btn-secondary"
+                style={{ fontSize: '0.76rem', padding: '6px 12px' }}
+              >
+                <RefreshCw size={12} className={testing ? 'spin-slow' : ''} />
+                <span>{testing ? 'Testing...' : 'Ping Test'}</span>
+              </button>
+            </div>
+          )}
 
           {/* Provider Selection */}
           <div>
-            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
-              Select Provider to Configure:
+            <label style={{ fontSize: '0.74rem', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '8px' }}>
+              Select LLM Provider
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
               {[
-                { id: 'gemini', label: 'Google Gemini', sub: 'Free & Fast (Recommended)' },
-                { id: 'openai', label: 'OpenAI', sub: 'GPT-4o-mini' },
-                { id: 'anthropic', label: 'Anthropic', sub: 'Claude 3.5 Haiku' }
-              ].map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setProvider(p.id as any)}
-                  style={{
-                    background: provider === p.id ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.03)',
-                    border: provider === p.id ? '1px solid #6366f1' : '1px solid var(--border-subtle)',
-                    borderRadius: '8px',
-                    padding: '10px 12px',
-                    textAlign: 'left',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ fontWeight: 700, fontSize: '0.82rem', color: provider === p.id ? '#fff' : '#cbd5e1' }}>
-                    {p.label}
-                  </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    {p.sub}
-                  </div>
-                </button>
-              ))}
+                { id: 'gemini', name: 'Google Gemini', desc: '100% Free Tier', badge: 'Recommended' },
+                { id: 'openai', name: 'OpenAI', desc: 'GPT-4o mini', badge: 'Paid' },
+                { id: 'anthropic', name: 'Anthropic', desc: 'Claude 3 Haiku', badge: 'Paid' }
+              ].map((p) => {
+                const isSelected = provider === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setProvider(p.id as any)}
+                    style={{
+                      background: isSelected ? '#ffffff' : '#0d0d0d',
+                      color: isSelected ? '#000000' : '#ffffff',
+                      border: isSelected ? '1px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '6px',
+                      padding: '10px 12px',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      boxShadow: isSelected ? '0 2px 10px rgba(255,255,255,0.2)' : 'none'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700 }}>{p.name}</span>
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: isSelected ? '#52525b' : '#71717a' }}>
+                      {p.desc} {p.badge ? `• ${p.badge}` : ''}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Instructions Box */}
+          {/* Provider Direct Help Link */}
           <div style={{
-            background: 'rgba(56, 189, 248, 0.08)',
-            border: '1px solid rgba(56, 189, 248, 0.25)',
-            borderRadius: '8px',
-            padding: '12px 16px',
-            fontSize: '0.78rem',
-            color: '#e0f2fe'
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '6px',
+            padding: '10px 14px',
+            fontSize: '0.76rem',
+            color: '#a1a1aa',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
           }}>
             {provider === 'gemini' ? (
-              <div>
-                <strong>How to get a Free Google Gemini API Key:</strong>
-                <ol style={{ paddingLeft: '20px', marginTop: '6px', lineHeight: 1.5 }}>
-                  <li>Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ color: '#38bdf8', fontWeight: 600 }}>Google AI Studio (aistudio.google.com/app/apikey)</a>.</li>
-                  <li>Sign in with your Google account and click <strong>Create API Key</strong>.</li>
-                  <li>Copy and paste your key below. (Free tier includes generous request limits).</li>
-                </ol>
-              </div>
+              <span>Get a free Gemini API key with zero credit card from Google AI Studio.</span>
             ) : provider === 'openai' ? (
-              <div>
-                <strong>How to get an OpenAI API Key:</strong>
-                <p style={{ marginTop: '4px' }}>
-                  Generate an API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" style={{ color: '#38bdf8', fontWeight: 600 }}>platform.openai.com/api-keys</a>.
-                </p>
-              </div>
+              <span>Get your secret key from your OpenAI Platform account dashboard.</span>
             ) : (
-              <div>
-                <strong>How to get an Anthropic API Key:</strong>
-                <p style={{ marginTop: '4px' }}>
-                  Generate an API key from <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noreferrer" style={{ color: '#38bdf8', fontWeight: 600 }}>console.anthropic.com/settings/keys</a>.
-                </p>
-              </div>
+              <span>Get your secret key from the Anthropic Console dashboard.</span>
             )}
+            <a
+              href={
+                provider === 'gemini'
+                  ? 'https://aistudio.google.com/app/apikey'
+                  : provider === 'openai'
+                  ? 'https://platform.openai.com/api-keys'
+                  : 'https://console.anthropic.com/settings/keys'
+              }
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                color: '#ffffff',
+                textDecoration: 'none',
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.4)'
+              }}
+            >
+              <span>Get Key</span>
+              <ExternalLink size={11} />
+            </a>
           </div>
 
-          {/* Key Input */}
+          {/* API Key Input */}
           <div>
-            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
-              {provider.toUpperCase()} API Key:
+            <label style={{ fontSize: '0.74rem', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '6px' }}>
+              Enter {provider.toUpperCase()} API Key
             </label>
             <div style={{ position: 'relative' }}>
               <input
                 type={showKey ? 'text' : 'password'}
-                placeholder={`Paste your ${provider} API key here...`}
+                placeholder={
+                  provider === 'gemini'
+                    ? 'AIzaSy...'
+                    : provider === 'openai'
+                    ? 'sk-proj-...'
+                    : 'sk-ant-...'
+                }
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 style={{
                   width: '100%',
-                  background: 'rgba(15, 23, 42, 0.8)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '8px',
-                  padding: '10px 42px 10px 14px',
-                  color: '#fff',
-                  fontSize: '0.85rem',
-                  fontFamily: 'var(--font-mono)',
-                  outline: 'none'
+                  background: '#050505',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '6px',
+                  padding: '9px 40px 9px 12px',
+                  color: '#ffffff',
+                  fontSize: '0.82rem',
+                  fontFamily: 'var(--font-mono)'
                 }}
               />
               <button
@@ -259,65 +288,61 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 onClick={() => setShowKey(!showKey)}
                 style={{
                   position: 'absolute',
-                  right: '12px',
+                  right: '10px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'transparent',
                   border: 'none',
-                  color: 'var(--text-muted)',
+                  color: '#71717a',
                   cursor: 'pointer'
                 }}
               >
-                {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
             </div>
+            <p style={{ fontSize: '0.7rem', color: '#71717a', marginTop: '4px' }}>
+              Keys are stored in local server memory and session state. They are never exposed to client-side code.
+            </p>
           </div>
 
-          {/* Feedback Result */}
+          {/* Test or Feedback Result */}
           {testResult && (
             <div style={{
-              background: testResult.success ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-              border: testResult.success ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: '8px',
-              padding: '12px 16px',
+              background: testResult.success ? 'rgba(255, 255, 255, 0.05)' : '#141414',
+              border: testResult.success ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid #3f3f46',
+              borderRadius: '6px',
+              padding: '10px 14px',
+              fontSize: '0.78rem',
+              color: testResult.success ? '#ffffff' : '#a1a1aa',
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
-              fontSize: '0.82rem',
-              color: testResult.success ? '#34d399' : '#f87171'
+              gap: '8px'
             }}>
-              {testResult.success ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+              {testResult.success ? <CheckCircle2 size={16} color="#ffffff" /> : <AlertCircle size={16} color="#a1a1aa" />}
               <span>{testResult.message}</span>
             </div>
           )}
-
-          {/* Privacy Notice */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
-            <ShieldCheck size={14} color="#10b981" />
-            <span>
-              Your API key is used strictly for paper analysis and is never sent to third-party telemetry servers.
-            </span>
-          </div>
         </div>
 
         {/* Footer */}
         <div style={{
           padding: '14px 24px',
-          borderTop: '1px solid var(--border-subtle)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          background: '#070707',
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
+          justifyContent: 'flex-end',
+          gap: '8px'
         }}>
-          <button onClick={onClose} className="btn-ghost">
+          <button onClick={onClose} className="btn-secondary">
             Close
           </button>
           <button
             onClick={handleSave}
-            disabled={!apiKey.trim() || saving}
+            disabled={saving || !apiKey.trim()}
             className="btn-primary"
-            style={{ opacity: (!apiKey.trim() || saving) ? 0.6 : 1 }}
+            style={{ opacity: !apiKey.trim() ? 0.5 : 1 }}
           >
-            <span>{saving ? 'Testing & Saving...' : 'Save & Activate Key'}</span>
+            {saving ? 'Testing & Saving...' : 'Save & Activate Key'}
           </button>
         </div>
       </div>

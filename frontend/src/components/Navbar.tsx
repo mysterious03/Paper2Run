@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, Download, Sparkles, UploadCloud, RefreshCw, CheckCircle2, AlertTriangle, Key } from 'lucide-react';
+import { FileText, Download, UploadCloud, RefreshCw, Key, ExternalLink } from 'lucide-react';
 import { AnalysisResult } from '../types';
 import { getExportUrl } from '../lib/api';
 
@@ -28,99 +28,117 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header style={{
-      borderBottom: '1px solid var(--border-subtle)',
-      background: 'rgba(9, 13, 22, 0.85)',
-      backdropFilter: 'blur(16px)',
+      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'rgba(0, 0, 0, 0.92)',
+      backdropFilter: 'blur(20px)',
       position: 'sticky',
       top: 0,
       zIndex: 50,
       padding: '0 24px',
-      height: '64px',
+      height: '60px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between'
     }}>
       {/* Brand & Tagline */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
-            background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
-            width: '34px',
-            height: '34px',
-            borderRadius: '9px',
+            background: '#ffffff',
+            width: '32px',
+            height: '32px',
+            borderRadius: '6px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 0 16px rgba(99, 102, 241, 0.4)'
+            boxShadow: '0 0 16px rgba(255, 255, 255, 0.2)',
+            transition: 'all 0.2s ease',
+            cursor: 'pointer'
           }}>
-            <FileText size={19} color="#fff" />
+            <FileText size={18} color="#000000" />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#fff' }}>
-                Paper<span style={{ color: '#38bdf8' }}>2</span>Run
+              <span style={{ fontSize: '1.1rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#ffffff' }}>
+                Paper2Run
               </span>
               <span style={{
-                fontSize: '0.65rem',
-                background: 'rgba(99, 102, 241, 0.2)',
-                color: '#818cf8',
-                padding: '2px 6px',
-                borderRadius: '4px',
+                fontSize: '0.62rem',
+                background: 'rgba(255, 255, 255, 0.08)',
+                color: '#a1a1aa',
+                padding: '1px 5px',
+                borderRadius: '3px',
                 fontWeight: 600,
-                border: '1px solid rgba(99, 102, 241, 0.3)'
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                letterSpacing: '0.04em'
               }}>
-                v1.0
+                RESEARCH
               </span>
             </div>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1 }}>
-              Understand the paper. Connect the evidence. Reproduce the experiment.
+            <p style={{ fontSize: '0.68rem', color: '#71717a', lineHeight: 1 }}>
+              Understand the paper • Connect evidence • Reproduce experiment
             </p>
           </div>
         </div>
 
-        {/* Workspace Mode Tabs */}
+        {/* Workspace Mode Tabs - Minimal Segmented Control */}
         <nav style={{
           display: 'flex',
-          gap: '4px',
-          background: 'rgba(15, 23, 42, 0.8)',
-          padding: '4px',
-          borderRadius: '8px',
-          border: '1px solid var(--border-subtle)',
-          marginLeft: '20px'
+          gap: '2px',
+          background: '#0d0d0d',
+          padding: '3px',
+          borderRadius: '6px',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          marginLeft: '12px'
         }}>
           {[
-            { id: 'blueprint', label: 'Blueprint', icon: '📋' },
-            { id: 'learn', label: 'Learn', icon: '💡' },
-            { id: 'connections', label: 'Connections', icon: '🕸️' },
-            { id: 'verify', label: 'Verify & Gaps', icon: '🛡️' }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              style={{
-                background: activeTab === tab.id ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-                color: activeTab === tab.id ? '#fff' : 'var(--text-secondary)',
-                border: activeTab === tab.id ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid transparent',
-                borderRadius: '6px',
-                padding: '6px 14px',
-                fontSize: '0.82rem',
-                fontWeight: activeTab === tab.id ? 600 : 500,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
-            </button>
-          ))}
+            { id: 'blueprint', label: 'Blueprint' },
+            { id: 'learn', label: 'Learn' },
+            { id: 'connections', label: 'Topology' },
+            { id: 'verify', label: 'Gaps & Verification' }
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                style={{
+                  background: isActive ? '#ffffff' : 'transparent',
+                  color: isActive ? '#000000' : '#a1a1aa',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '5px 12px',
+                  fontSize: '0.78rem',
+                  fontWeight: isActive ? 600 : 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
+                  boxShadow: isActive ? '0 1px 4px rgba(0,0,0,0.4)' : 'none'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = '#ffffff';
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = '#a1a1aa';
+                    e.currentTarget.style.background = 'transparent';
+                  }
+                }}
+              >
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </nav>
       </div>
 
       {/* Action Controls & Export */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         {/* LLM Status Badge & Settings Trigger */}
         <div
           onClick={onOpenSettings}
@@ -128,13 +146,22 @@ export const Navbar: React.FC<NavbarProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
-            padding: '4px 10px',
+            padding: '5px 10px',
             borderRadius: '6px',
-            background: isLLMConfigured ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-            border: isLLMConfigured ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(245, 158, 11, 0.25)',
-            fontSize: '0.74rem',
-            color: isLLMConfigured ? '#34d399' : '#fbbf24',
-            cursor: 'pointer'
+            background: isLLMConfigured ? 'rgba(255, 255, 255, 0.06)' : '#0d0d0d',
+            border: isLLMConfigured ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #27272a',
+            fontSize: '0.72rem',
+            color: isLLMConfigured ? '#ffffff' : '#71717a',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.09)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = isLLMConfigured ? 'rgba(255, 255, 255, 0.2)' : '#27272a';
+            e.currentTarget.style.background = isLLMConfigured ? 'rgba(255, 255, 255, 0.06)' : '#0d0d0d';
           }}
           title="Click to configure AI Engine / API Keys"
         >
@@ -142,9 +169,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             width: '6px',
             height: '6px',
             borderRadius: '50%',
-            background: isLLMConfigured ? '#10b981' : '#f59e0b'
+            background: isLLMConfigured ? '#ffffff' : '#52525b',
+            boxShadow: isLLMConfigured ? '0 0 6px rgba(255, 255, 255, 0.6)' : 'none'
           }} />
-          <span>{llmProvider}</span>
+          <span style={{ fontWeight: 500 }}>{llmProvider}</span>
         </div>
 
         {/* API Key Modal Button */}
@@ -153,28 +181,29 @@ export const Navbar: React.FC<NavbarProps> = ({
           className="btn-secondary"
           title="Configure Google Gemini, OpenAI, or Anthropic API Keys"
         >
-          <Key size={14} color="#818cf8" />
+          <Key size={13} color="#ffffff" />
           <span>API Keys</span>
         </button>
 
-        {/* Sample Paper Selector */}
+        {/* Benchmark Selector */}
         <select
           onChange={(e) => onLoadSample(e.target.value as any)}
           style={{
-            background: 'rgba(30, 41, 59, 0.7)',
-            color: '#38bdf8',
-            border: '1px solid var(--border-accent)',
-            borderRadius: '8px',
-            padding: '7px 10px',
-            fontSize: '0.78rem',
-            fontWeight: 600,
+            background: '#0d0d0d',
+            color: '#ffffff',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '6px',
+            padding: '6px 10px',
+            fontSize: '0.76rem',
+            fontWeight: 500,
             cursor: 'pointer',
-            outline: 'none'
+            outline: 'none',
+            transition: 'all 0.15s ease'
           }}
           defaultValue="transformer"
         >
-          <option value="transformer">⭐ Sample 1: Transformer (2017)</option>
-          <option value="lora">⚡ Sample 2: LoRA PEFT (2021)</option>
+          <option value="transformer">Vaswani et al. (Transformer, 2017)</option>
+          <option value="lora">Hu et al. (LoRA PEFT, 2021)</option>
         </select>
 
         {/* Upload Paper */}
@@ -182,13 +211,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           onClick={onOpenUpload}
           className="btn-primary"
         >
-          <UploadCloud size={15} />
+          <UploadCloud size={14} color="#000000" />
           <span>Upload PDF</span>
         </button>
 
-        {/* Export Dropdown */}
+        {/* Export Buttons */}
         {paperId && (
-          <div style={{ display: 'flex', gap: '6px' }}>
+          <div style={{ display: 'flex', gap: '5px' }}>
             <a
               href={getExportUrl(paperId, 'markdown')}
               download
@@ -196,15 +225,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               style={{ textDecoration: 'none' }}
               title="Download evidence-backed Markdown reproduction report"
             >
-              <Download size={14} />
-              <span>Report (.md)</span>
+              <Download size={13} />
+              <span>Report</span>
             </a>
             <a
               href={getExportUrl(paperId, 'json')}
               download
               className="btn-secondary"
               style={{ textDecoration: 'none' }}
-              title="Download structured JSON blueprint (retains nulls for gaps)"
+              title="Download structured JSON blueprint"
             >
               <span>JSON</span>
             </a>
@@ -222,7 +251,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               download
               className="btn-secondary"
               style={{ textDecoration: 'none' }}
-              title="Download actionable reproduction checklist"
+              title="Download reproduction checklist"
             >
               <span>Checklist</span>
             </a>
