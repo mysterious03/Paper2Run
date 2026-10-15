@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment and Secrets
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+frontend/dist/
+dist/
+build/
+*.egg-info/
+
+# Tests & caches
+.pytest_cache/
+.coverage
+htmlcov/
+.oxlintrc.json
+.eslintcache
+
+# Storage
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/data/*
+!backend/data/.gitkeep
+
+# Operating system / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
