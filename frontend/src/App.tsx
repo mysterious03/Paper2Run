@@ -10,6 +10,7 @@ import { ConnectionsSection } from './components/ConnectionsSection';
 import { GapsSection } from './components/GapsSection';
 import { EvidenceModal } from './components/EvidenceModal';
 import { UploadModal } from './components/UploadModal';
+import { SettingsModal } from './components/SettingsModal';
 
 export const App: React.FC = () => {
   const [currentPaper, setCurrentPaper] = useState<AnalysisResult | null>(null);
@@ -17,6 +18,7 @@ export const App: React.FC = () => {
   const [selectedFieldForLearn, setSelectedFieldForLearn] = useState<BlueprintField | null>(null);
   const [evidenceModalField, setEvidenceModalField] = useState<BlueprintField | null>(null);
   const [isUploadOpen, setIsUploadOpen] = useState<boolean>(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [llmProvider, setLLMProvider] = useState<string>('Checking...');
   const [isLLMConfigured, setIsLLMConfigured] = useState<boolean>(false);
@@ -75,6 +77,7 @@ export const App: React.FC = () => {
       <Navbar
         currentPaper={currentPaper}
         onOpenUpload={() => setIsUploadOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         onLoadSample={loadSampleDemo}
         llmProvider={llmProvider}
         isLLMConfigured={isLLMConfigured}
@@ -177,12 +180,30 @@ export const App: React.FC = () => {
       <UploadModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
+        onOpenSettings={() => {
+          setIsUploadOpen(false);
+          setIsSettingsOpen(true);
+        }}
         onUploadSuccess={(res) => {
           setCurrentPaper(res);
           if (res.blueprint && res.blueprint.length > 0) {
             setSelectedFieldForLearn(res.blueprint[0]);
           }
           setActiveTab('blueprint');
+        }}
+      />
+
+      {/* API Key Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        onConfigChanged={() => {
+          checkHealth()
+            .then((health) => {
+              setLLMProvider(health.llm_provider);
+              setIsLLMConfigured(health.llm_configured);
+            })
+            .catch(() => {});
         }}
       />
     </div>

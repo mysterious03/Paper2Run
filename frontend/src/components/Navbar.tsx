@@ -1,11 +1,12 @@
 import React from 'react';
-import { FileText, Download, Sparkles, UploadCloud, RefreshCw, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { FileText, Download, Sparkles, UploadCloud, RefreshCw, CheckCircle2, AlertTriangle, Key } from 'lucide-react';
 import { AnalysisResult } from '../types';
 import { getExportUrl } from '../lib/api';
 
 interface NavbarProps {
   currentPaper: AnalysisResult | null;
   onOpenUpload: () => void;
+  onOpenSettings: () => void;
   onLoadSample: (paperType?: 'transformer' | 'lora') => void;
   llmProvider: string;
   isLLMConfigured: boolean;
@@ -16,6 +17,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   currentPaper,
   onOpenUpload,
+  onOpenSettings,
   onLoadSample,
   llmProvider,
   isLLMConfigured,
@@ -119,18 +121,23 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Action Controls & Export */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {/* LLM Status Badge */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          padding: '4px 10px',
-          borderRadius: '6px',
-          background: isLLMConfigured ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-          border: isLLMConfigured ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(245, 158, 11, 0.25)',
-          fontSize: '0.74rem',
-          color: isLLMConfigured ? '#34d399' : '#fbbf24'
-        }}>
+        {/* LLM Status Badge & Settings Trigger */}
+        <div
+          onClick={onOpenSettings}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '4px 10px',
+            borderRadius: '6px',
+            background: isLLMConfigured ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+            border: isLLMConfigured ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(245, 158, 11, 0.25)',
+            fontSize: '0.74rem',
+            color: isLLMConfigured ? '#34d399' : '#fbbf24',
+            cursor: 'pointer'
+          }}
+          title="Click to configure AI Engine / API Keys"
+        >
           <span style={{
             width: '6px',
             height: '6px',
@@ -139,6 +146,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           }} />
           <span>{llmProvider}</span>
         </div>
+
+        {/* API Key Modal Button */}
+        <button
+          onClick={onOpenSettings}
+          className="btn-secondary"
+          title="Configure Google Gemini, OpenAI, or Anthropic API Keys"
+        >
+          <Key size={14} color="#818cf8" />
+          <span>API Keys</span>
+        </button>
 
         {/* Sample Paper Selector */}
         <select

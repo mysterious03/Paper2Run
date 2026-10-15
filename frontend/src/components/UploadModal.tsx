@@ -1,17 +1,19 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, FileText, AlertCircle, X, CheckCircle2, ArrowRight } from 'lucide-react';
+import { UploadCloud, FileText, AlertCircle, X, CheckCircle2, ArrowRight, Key } from 'lucide-react';
 import { uploadPdfPaper } from '../lib/api';
 import { AnalysisResult } from '../types';
 
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenSettings?: () => void;
   onUploadSuccess: (result: AnalysisResult) => void;
 }
 
 export const UploadModal: React.FC<UploadModalProps> = ({
   isOpen,
   onClose,
+  onOpenSettings,
   onUploadSuccess
 }) => {
   const [file, setFile] = useState<File | null>(null);
@@ -177,15 +179,30 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               background: 'rgba(239, 68, 68, 0.12)',
               border: '1px solid rgba(239, 68, 68, 0.3)',
               borderRadius: '8px',
-              padding: '12px 16px',
+              padding: '14px 18px',
               display: 'flex',
-              alignItems: 'center',
+              flexDirection: 'column',
               gap: '10px',
               color: '#f87171',
-              fontSize: '0.8rem'
+              fontSize: '0.82rem'
             }}>
-              <AlertCircle size={16} style={{ flexShrink: 0 }} />
-              <span>{error}</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span style={{ lineHeight: 1.5 }}>{error}</span>
+              </div>
+              {onOpenSettings && error.includes('API Key') && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
+                  <button
+                    type="button"
+                    onClick={onOpenSettings}
+                    className="btn-primary"
+                    style={{ padding: '6px 12px', fontSize: '0.78rem' }}
+                  >
+                    <Key size={13} />
+                    <span>Open API Key Settings</span>
+                  </button>
+                </div>
+              )}
             </div>
           )}
 

@@ -59,6 +59,48 @@ class ExplainRequest(BaseModel):
     field_id: str
     level: Literal["beginner", "technical", "math"] = "technical"
 
+class SetKeyRequest(BaseModel):
+    provider: Literal["gemini", "openai", "anthropic"]
+    key: str
+
+@app.get("/api/settings/keys")
+def get_key_status():
+    client = extraction_service.llm_client
+    def mask(k: str):
+        if not k or len(k) < 8:
+            return ""
+        return k[:4] + "..." + k[-4:]
+
+    return {
+        "gemini_configured": bool(client.gemini_key),
+        "gemini_masked": mask(client.gemini_key),
+        "openai_configured": bool(client.openai_key),
+        "openai_masked": mask(client.openai_key),
+        "anthropic_configured": bool(client.anthropic_key),
+        "anthropic_masked": mask(client.anthropic_key),
+        "active_provider": client.get_provider_name()
+    }
+
+@app.post("/api/settings/keys")
+def update_key(req: SetKeyRequest):
+    extraction_service.llm_client.set_key(req.provider, req.key)
+    learning_service.llm_client.set_key(req.provider, req.key)
+    ok, msg = extraction_service.llm_client.test_connection()
+    return {
+        "success": ok,
+        "message": msg,
+        "active_provider": extraction_service.llm_client.get_provider_name()
+    }
+
+@app.post("/api/settings/test")
+def test_active_connection():
+    ok, msg = extraction_service.llm_client.test_connection()
+    return {
+        "success": ok,
+        "message": msg,
+        "active_provider": extraction_service.llm_client.get_provider_name()
+    }
+
 @app.get("/api/health")
 def health_check():
     provider = extraction_service.llm_client.get_provider_name()

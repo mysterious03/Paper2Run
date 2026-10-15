@@ -61,3 +61,25 @@ export async function requestExplanation(
 export function getExportUrl(paperId: string, format: 'markdown' | 'json' | 'yaml' | 'checklist'): string {
   return `${BASE_URL}/papers/${paperId}/export?format=${format}`;
 }
+
+export async function getKeyStatus() {
+  const res = await fetch(`${BASE_URL}/settings/keys`);
+  if (!res.ok) throw new Error('Failed to fetch key status');
+  return res.json();
+}
+
+export async function saveApiKey(provider: 'gemini' | 'openai' | 'anthropic', key: string) {
+  const res = await fetch(`${BASE_URL}/settings/keys`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ provider, key }),
+  });
+  if (!res.ok) throw new Error('Failed to save API key');
+  return res.json();
+}
+
+export async function testApiConnection() {
+  const res = await fetch(`${BASE_URL}/settings/test`, { method: 'POST' });
+  if (!res.ok) throw new Error('Failed to test connection');
+  return res.json();
+}

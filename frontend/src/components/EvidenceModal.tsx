@@ -128,19 +128,37 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({ field, onClose }) 
 
                     <blockquote style={{
                       margin: '8px 0',
-                      padding: '8px 12px',
+                      padding: '10px 14px',
                       borderLeft: '3px solid #6366f1',
-                      background: 'rgba(99, 102, 241, 0.05)',
-                      color: '#e2e8f0',
+                      background: 'rgba(99, 102, 241, 0.06)',
+                      color: '#f1f5f9',
                       fontSize: '0.85rem',
                       fontStyle: 'italic',
-                      lineHeight: 1.5
+                      lineHeight: 1.55,
+                      borderRadius: '0 6px 6px 0'
                     }}>
                       "{ev.quote}"
                     </blockquote>
 
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                        <strong>Semantic Analysis:</strong> {ev.semantic_support.toUpperCase().replace('_', ' ')}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`Page ${ev.page_index + 1} (${ev.section}): "${ev.quote}"`);
+                        }}
+                        className="btn-ghost"
+                        style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                        title="Copy quote citation to clipboard"
+                      >
+                        Copy Citation
+                      </button>
+                    </div>
+
                     {ev.notes && (
-                      <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '6px' }}>
+                      <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '6px', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '6px' }}>
                         ℹ️ {ev.notes}
                       </div>
                     )}

@@ -109,21 +109,19 @@ class ExtractionService:
         pages: List[DocumentPage]
     ) -> AnalysisResult:
         """
-        Runs extraction pipeline on the pages.
-        If no API key is provided, returns the validated sample demo paper with clear notification.
+        Runs live extraction pipeline on the uploaded document pages.
+        Enforces real extraction: if no LLM API key is configured, raises LLMException
+        with direct instructions on obtaining and setting a key.
         """
         total_pages = len(pages)
         created_at = "2026-10-15T12:00:00Z"
 
         if not self.llm_client.is_configured():
-            # If no API key configured, use the high-fidelity sample analysis
-            sample_result = get_sample_analysis()
-            sample_result.metadata.filename = filename
-            sample_result.metadata.title = f"{title} (Demo Analysis - LLM API key not configured)"
-            sample_result.metadata.paper_id = paper_id
-            sample_result.metadata.page_count = total_pages
-            sample_result.metadata.is_sample_demo = True
-            return sample_result
+            raise LLMException(
+                "LLM API Key Required: To extract and verify an experiment blueprint from this uploaded PDF in real time, "
+                "please enter a Google Gemini API Key (free from Google AI Studio: https://aistudio.google.com/app/apikey) "
+                "or OpenAI API Key in the Settings panel."
+            )
 
         # Build prompt from page texts (truncate if extremely large to fit model context)
         document_text_blocks = []
