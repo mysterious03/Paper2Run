@@ -78,6 +78,7 @@ export const ConnectionsSection: React.FC<ConnectionsSectionProps> = ({ graph, o
           border: '1px solid rgba(255, 255, 255, 0.08)'
         }}>
           <button
+            type="button"
             onClick={() => setViewMode('visual')}
             style={{
               background: viewMode === 'visual' ? '#ffffff' : 'transparent',
@@ -93,11 +94,13 @@ export const ConnectionsSection: React.FC<ConnectionsSectionProps> = ({ graph, o
               cursor: 'pointer',
               transition: 'all 0.15s ease'
             }}
+            aria-pressed={viewMode === 'visual'}
           >
-            <Network size={13} />
+            <Network size={13} aria-hidden="true" />
             <span>Topology Canvas</span>
           </button>
           <button
+            type="button"
             onClick={() => setViewMode('navigator')}
             style={{
               background: viewMode === 'navigator' ? '#ffffff' : 'transparent',
@@ -113,8 +116,9 @@ export const ConnectionsSection: React.FC<ConnectionsSectionProps> = ({ graph, o
               cursor: 'pointer',
               transition: 'all 0.15s ease'
             }}
+            aria-pressed={viewMode === 'navigator'}
           >
-            <ListTree size={13} />
+            <ListTree size={13} aria-hidden="true" />
             <span>Entity Navigator</span>
           </button>
         </div>
@@ -213,9 +217,19 @@ export const ConnectionsSection: React.FC<ConnectionsSectionProps> = ({ graph, o
                 return (
                   <g
                     key={node.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Topology Node: ${node.label}, type ${node.type}`}
+                    aria-pressed={isSelected}
                     transform={`translate(${pos.x}, ${pos.y})`}
                     onClick={() => setSelectedNodeId(node.id)}
-                    style={{ cursor: 'pointer' }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedNodeId(node.id);
+                      }
+                    }}
+                    style={{ cursor: 'pointer', outline: 'none' }}
                   >
                     {/* Outer Glow Halo on selected */}
                     {isSelected && (

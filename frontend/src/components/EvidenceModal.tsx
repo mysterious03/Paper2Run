@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BlueprintField } from '../types';
 import { X, CheckCircle2, AlertTriangle, ShieldCheck, Quote, Copy, Check } from 'lucide-react';
 
@@ -9,6 +9,15 @@ interface EvidenceModalProps {
 
 export const EvidenceModal: React.FC<EvidenceModalProps> = ({ field, onClose }) => {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+
+  // Close on Escape key for WCAG accessibility
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   if (!field) return null;
 
@@ -21,20 +30,25 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({ field, onClose }) 
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0, 0, 0, 0.85)',
-      backdropFilter: 'blur(12px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 100,
-      padding: '20px'
-    }}>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="evidence-modal-title"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(12px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 100,
+        padding: '20px'
+      }}
+    >
       <div className="glass-panel" style={{
         background: '#0a0a0a',
         width: '100%',
@@ -64,16 +78,18 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({ field, onClose }) 
                 {field.category.replace('_', ' ')}
               </span>
             </div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
+            <h3 id="evidence-modal-title" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
               Evidence Provenance: {field.name}
             </h3>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="btn-ghost"
             style={{ borderRadius: '50%', padding: '6px' }}
+            aria-label="Close evidence modal"
           >
-            <X size={16} />
+            <X size={16} aria-hidden="true" />
           </button>
         </div>
 
@@ -97,10 +113,10 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({ field, onClose }) 
           {/* Citations List */}
           <div>
             <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#71717a', textTransform: 'uppercase', marginBottom: '10px' }}>
-              Document Citations & Verification Details ({field.evidence.length})
+              Document Citations & Verification Details ({field.evidence ? field.evidence.length : 0})
             </div>
 
-            {field.evidence.length === 0 ? (
+            {(!field.evidence || field.evidence.length === 0) ? (
               <p style={{ color: '#71717a', fontStyle: 'italic', fontSize: '0.82rem' }}>
                 No direct citations found in examined content for this field.
               </p>
@@ -135,7 +151,7 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({ field, onClose }) 
                           PAGE {ev.page_index}
                         </span>
                         <span style={{ fontSize: '0.78rem', color: '#a1a1aa', fontWeight: 500 }}>
-                          {ev.section}
+                          {ev.section || 'Main Text'}
                         </span>
                       </div>
 
@@ -151,7 +167,7 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({ field, onClose }) 
                         color: ev.quote_match ? '#ffffff' : '#a1a1aa',
                         border: ev.quote_match ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid #3f3f46'
                       }}>
-                        {ev.quote_match ? <CheckCircle2 size={12} color="#ffffff" /> : <AlertTriangle size={12} color="#a1a1aa" />}
+                        {ev.quote_match ? <CheckCircle2 size={12} color="#ffffff" aria-hidden="true" /> : <AlertTriangle size={12} color="#a1a1aa" aria-hidden="true" />}
                         <span>{ev.quote_match ? 'Quote Verified in Source' : 'Quote Mismatch'}</span>
                       </div>
                     </div>
@@ -174,18 +190,20 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({ field, onClose }) 
                     {/* Actions: Copy Citation */}
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '2px' }}>
                       <button
+                        type="button"
                         onClick={() => handleCopyCitation(ev.quote, ev.page_index, ev.section || 'Main Text', i)}
                         className="btn-ghost"
                         style={{ fontSize: '0.72rem', padding: '3px 8px' }}
+                        aria-label={`Copy citation from page ${ev.page_index}`}
                       >
                         {copiedIdx === i ? (
                           <>
-                            <Check size={12} color="#ffffff" />
+                            <Check size={12} color="#ffffff" aria-hidden="true" />
                             <span>Copied to Clipboard</span>
                           </>
                         ) : (
                           <>
-                            <Copy size={12} />
+                            <Copy size={12} aria-hidden="true" />
                             <span>Copy Citation</span>
                           </>
                         )}
@@ -210,7 +228,7 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({ field, onClose }) 
           <span style={{ fontSize: '0.7rem', color: '#71717a' }}>
             Bound to exact page indices in parsed PDF stream
           </span>
-          <button onClick={onClose} className="btn-secondary" style={{ padding: '6px 14px' }}>
+          <button type="button" onClick={onClose} className="btn-secondary" style={{ padding: '6px 14px' }}>
             Close
           </button>
         </div>

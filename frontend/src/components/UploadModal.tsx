@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { UploadCloud, FileText, AlertCircle, X, CheckCircle2, ArrowRight, Key } from 'lucide-react';
 import { uploadPdfPaper } from '../lib/api';
 import { AnalysisResult } from '../types';
@@ -21,6 +21,15 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Close on Escape key for WCAG accessibility
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !loading) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, loading, onClose]);
 
   if (!isOpen) return null;
 
@@ -68,20 +77,25 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0, 0, 0, 0.85)',
-      backdropFilter: 'blur(12px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 100,
-      padding: '20px'
-    }}>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="upload-modal-title"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(12px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 100,
+        padding: '20px'
+      }}
+    >
       <div className="glass-panel" style={{
         background: '#0a0a0a',
         width: '100%',
@@ -102,21 +116,37 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           alignItems: 'center'
         }}>
           <div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
+            <h3 id="upload-modal-title" style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
               Upload Research Paper
             </h3>
             <p style={{ fontSize: '0.72rem', color: '#71717a' }}>
               Text-based AI/ML PDF format (arXiv, NeurIPS, ICML, ICLR, CVPR)
             </p>
           </div>
-          <button onClick={onClose} className="btn-ghost" disabled={loading} style={{ borderRadius: '50%', padding: '6px' }}>
-            <X size={16} />
+          <button
+            type="button"
+            onClick={onClose}
+            className="btn-ghost"
+            disabled={loading}
+            style={{ borderRadius: '50%', padding: '6px' }}
+            aria-label="Close upload modal"
+          >
+            <X size={16} aria-hidden="true" />
           </button>
         </div>
 
         {/* Drop Zone */}
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div
+            role="button"
+            tabIndex={0}
+            aria-label="Drag and drop PDF file here, or press Enter to browse files"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                inputRef.current?.click();
+              }
+            }}
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
@@ -128,7 +158,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               textAlign: 'center',
               background: dragOver ? 'rgba(255, 255, 255, 0.05)' : '#050505',
               cursor: 'pointer',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              outline: 'none'
             }}
           >
             <input
@@ -137,6 +168,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               accept=".pdf"
               style={{ display: 'none' }}
               onChange={handleFileChange}
+              aria-hidden="true"
             />
 
             <div style={{
@@ -151,7 +183,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               justifyContent: 'center',
               margin: '0 auto 12px'
             }}>
-              <UploadCloud size={22} color="#ffffff" />
+              <UploadCloud size={22} color="#ffffff" aria-hidden="true" />
             </div>
 
             {file ? (
@@ -176,7 +208,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           </div>
 
           {error && (
-            <div style={{
+            <div role="alert" style={{
               background: '#141414',
               border: '1px solid #3f3f46',
               borderRadius: '6px',
@@ -188,7 +220,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               fontSize: '0.78rem'
             }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <AlertCircle size={16} color="#ffffff" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <AlertCircle size={16} color="#ffffff" style={{ flexShrink: 0, marginTop: '2px' }} aria-hidden="true" />
                 <span style={{ lineHeight: 1.5 }}>{error}</span>
               </div>
               {onOpenSettings && error.includes('API Key') && (
@@ -199,7 +231,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                     className="btn-primary"
                     style={{ padding: '6px 12px', fontSize: '0.74rem' }}
                   >
-                    <Key size={12} />
+                    <Key size={12} aria-hidden="true" />
                     <span>Open API Key Settings</span>
                   </button>
                 </div>
@@ -209,7 +241,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
           {/* Processing Indicator */}
           {loading && (
-            <div style={{
+            <div role="status" aria-live="polite" style={{
               background: '#0d0d0d',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '6px',
@@ -240,17 +272,18 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <button onClick={onClose} className="btn-ghost" disabled={loading}>
+          <button type="button" onClick={onClose} className="btn-ghost" disabled={loading}>
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleUpload}
             className="btn-primary"
             disabled={!file || loading}
             style={{ opacity: (!file || loading) ? 0.6 : 1 }}
           >
             <span>{loading ? 'Analyzing Paper...' : 'Extract & Analyze'}</span>
-            <ArrowRight size={14} />
+            <ArrowRight size={14} aria-hidden="true" />
           </button>
         </div>
       </div>

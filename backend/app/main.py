@@ -1,9 +1,10 @@
 import os
+import re
 import uuid
 import shutil
 from pathlib import Path
 from typing import Dict, Optional, Literal
-from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Response
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -28,6 +29,16 @@ app = FastAPI(
     description="Evidence-backed AI/ML research-to-reproduction assistant backend",
     version="1.0.0"
 )
+
+# Security Headers Middleware
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
 
 # Enable CORS for frontend Vite development server
 app.add_middleware(
@@ -144,14 +155,21 @@ async def upload_paper(file: UploadFile = File(...)):
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Invalid file format. Only PDF files are supported.")
 
+    # Sanitize filename against path traversal
+    safe_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', Path(file.filename).name)
     paper_id = f"paper_{uuid.uuid4().hex[:10]}"
-    file_path = settings.UPLOAD_DIR / f"{paper_id}_{file.filename}"
+    file_path = settings.UPLOAD_DIR / f"{paper_id}_{safe_name}"
 
     try:
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save uploaded file: {str(e)}")
+
+    # Enforce maximum size limit (30MB)
+    if file_path.stat().st_size > 30 * 1024 * 1024:
+        file_path.unlink(missing_ok=True)
+        raise HTTPException(status_code=400, detail="File size exceeds the 30MB limit.")
 
     # Parse with PyMuPDF
     try:
@@ -183,7 +201,7 @@ async def upload_paper(file: UploadFile = File(...)):
     except Exception as e:
         metadata.status = "error"
         metadata.error_message = str(e)
-        return {"paper_id": paper_id, "metadata": metadata, "error": str(e)}
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.get("/api/papers/{paper_id}")
 def get_paper(paper_id: str):

@@ -21,6 +21,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [saving, setSaving] = useState<boolean>(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
+  // Close on Escape key for WCAG accessibility
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     if (isOpen) {
       loadStatus();
@@ -68,20 +77,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0, 0, 0, 0.85)',
-      backdropFilter: 'blur(12px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 110,
-      padding: '20px'
-    }}>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settings-modal-title"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(12px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 110,
+        padding: '20px'
+      }}
+    >
       <div className="glass-panel" style={{
         background: '#0a0a0a',
         width: '100%',
@@ -111,10 +125,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Key size={15} color="#000000" />
+              <Key size={15} color="#000000" aria-hidden="true" />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
+              <h3 id="settings-modal-title" style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
                 AI Engine & Provider Setup
               </h3>
               <p style={{ fontSize: '0.72rem', color: '#71717a' }}>
@@ -122,8 +136,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="btn-ghost" style={{ borderRadius: '50%', padding: '6px' }}>
-            <X size={16} />
+          <button
+            type="button"
+            onClick={onClose}
+            className="btn-ghost"
+            style={{ borderRadius: '50%', padding: '6px' }}
+            aria-label="Close settings modal"
+          >
+            <X size={16} aria-hidden="true" />
           </button>
         </div>
 
@@ -159,22 +179,24 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
 
               <button
+                type="button"
                 onClick={handleTestOnly}
                 disabled={testing}
                 className="btn-secondary"
                 style={{ fontSize: '0.76rem', padding: '6px 12px' }}
+                aria-label="Ping connection test"
               >
-                <RefreshCw size={12} className={testing ? 'spin-slow' : ''} />
+                <RefreshCw size={12} className={testing ? 'spin-slow' : ''} aria-hidden="true" />
                 <span>{testing ? 'Testing...' : 'Ping Test'}</span>
               </button>
             </div>
           )}
 
           {/* Provider Selection */}
-          <div>
-            <label style={{ fontSize: '0.74rem', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '8px' }}>
+          <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+            <legend style={{ fontSize: '0.74rem', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '8px' }}>
               Select LLM Provider
-            </label>
+            </legend>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
               {[
                 { id: 'gemini', name: 'Google Gemini', desc: '100% Free Tier', badge: 'Recommended' },
@@ -185,6 +207,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 return (
                   <button
                     key={p.id}
+                    type="button"
                     onClick={() => setProvider(p.id as any)}
                     style={{
                       background: isSelected ? '#ffffff' : '#0d0d0d',
@@ -197,6 +220,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       transition: 'all 0.15s ease',
                       boxShadow: isSelected ? '0 2px 10px rgba(255,255,255,0.2)' : 'none'
                     }}
+                    aria-pressed={isSelected}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
                       <span style={{ fontSize: '0.82rem', fontWeight: 700 }}>{p.name}</span>
@@ -208,7 +232,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 );
               })}
             </div>
-          </div>
+          </fieldset>
 
           {/* Provider Direct Help Link */}
           <div style={{
@@ -251,17 +275,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               }}
             >
               <span>Get Key</span>
-              <ExternalLink size={11} />
+              <ExternalLink size={11} aria-hidden="true" />
             </a>
           </div>
 
           {/* API Key Input */}
           <div>
-            <label style={{ fontSize: '0.74rem', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '6px' }}>
+            <label htmlFor="api-key-input" style={{ fontSize: '0.74rem', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '6px' }}>
               Enter {provider.toUpperCase()} API Key
             </label>
             <div style={{ position: 'relative' }}>
               <input
+                id="api-key-input"
                 type={showKey ? 'text' : 'password'}
                 placeholder={
                   provider === 'gemini'
@@ -296,8 +321,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   color: '#71717a',
                   cursor: 'pointer'
                 }}
+                aria-label={showKey ? 'Hide API key' : 'Show API key'}
               >
-                {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
+                {showKey ? <EyeOff size={15} aria-hidden="true" /> : <Eye size={15} aria-hidden="true" />}
               </button>
             </div>
             <p style={{ fontSize: '0.7rem', color: '#71717a', marginTop: '4px' }}>
@@ -307,7 +333,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           {/* Test or Feedback Result */}
           {testResult && (
-            <div style={{
+            <div role="status" aria-live="polite" style={{
               background: testResult.success ? 'rgba(255, 255, 255, 0.05)' : '#141414',
               border: testResult.success ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid #3f3f46',
               borderRadius: '6px',
@@ -318,7 +344,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               alignItems: 'center',
               gap: '8px'
             }}>
-              {testResult.success ? <CheckCircle2 size={16} color="#ffffff" /> : <AlertCircle size={16} color="#a1a1aa" />}
+              {testResult.success ? <CheckCircle2 size={16} color="#ffffff" aria-hidden="true" /> : <AlertCircle size={16} color="#a1a1aa" aria-hidden="true" />}
               <span>{testResult.message}</span>
             </div>
           )}
@@ -333,10 +359,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           justifyContent: 'flex-end',
           gap: '8px'
         }}>
-          <button onClick={onClose} className="btn-secondary">
+          <button type="button" onClick={onClose} className="btn-secondary">
             Close
           </button>
           <button
+            type="button"
             onClick={handleSave}
             disabled={saving || !apiKey.trim()}
             className="btn-primary"

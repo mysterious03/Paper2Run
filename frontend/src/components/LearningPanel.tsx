@@ -123,6 +123,7 @@ export const LearningPanel: React.FC<LearningPanelProps> = ({
           border: '1px solid rgba(255, 255, 255, 0.08)'
         }}>
           <button
+            type="button"
             onClick={() => setPanelMode('concept')}
             style={{
               background: panelMode === 'concept' ? '#ffffff' : 'transparent',
@@ -138,11 +139,13 @@ export const LearningPanel: React.FC<LearningPanelProps> = ({
               gap: '6px',
               transition: 'all 0.15s ease'
             }}
+            aria-pressed={panelMode === 'concept'}
           >
-            <BookOpen size={14} />
+            <BookOpen size={14} aria-hidden="true" />
             <span>Concept Explainer</span>
           </button>
           <button
+            type="button"
             onClick={() => setPanelMode('prerequisites')}
             style={{
               background: panelMode === 'prerequisites' ? '#ffffff' : 'transparent',
@@ -158,15 +161,16 @@ export const LearningPanel: React.FC<LearningPanelProps> = ({
               gap: '6px',
               transition: 'all 0.15s ease'
             }}
+            aria-pressed={panelMode === 'prerequisites'}
           >
-            <GitMerge size={14} />
+            <GitMerge size={14} aria-hidden="true" />
             <span>Prerequisites Roadmap</span>
           </button>
         </div>
 
         {panelMode === 'concept' && (
           /* 3-Tier Depth Selector */
-          <div style={{
+          <div role="group" aria-label="Select explanation depth" style={{
             display: 'flex',
             gap: '4px',
             background: '#0d0d0d',
@@ -175,14 +179,15 @@ export const LearningPanel: React.FC<LearningPanelProps> = ({
             border: '1px solid rgba(255, 255, 255, 0.08)'
           }}>
             {[
-              { id: 'beginner', label: 'Beginner', icon: <GraduationCap size={13} /> },
-              { id: 'technical', label: 'Technical Intuition', icon: <Cpu size={13} /> },
-              { id: 'math', label: 'Mathematical Deep Dive', icon: <Binary size={13} /> }
+              { id: 'beginner', label: 'Beginner', icon: <GraduationCap size={13} aria-hidden="true" /> },
+              { id: 'technical', label: 'Technical Intuition', icon: <Cpu size={13} aria-hidden="true" /> },
+              { id: 'math', label: 'Mathematical Deep Dive', icon: <Binary size={13} aria-hidden="true" /> }
             ].map((btn) => {
               const isSelected = level === btn.id;
               return (
                 <button
                   key={btn.id}
+                  type="button"
                   onClick={() => setLevel(btn.id as any)}
                   style={{
                     background: isSelected ? '#ffffff' : 'transparent',
@@ -198,6 +203,7 @@ export const LearningPanel: React.FC<LearningPanelProps> = ({
                     gap: '5px',
                     transition: 'all 0.15s ease'
                   }}
+                  aria-pressed={isSelected}
                   onMouseEnter={(e) => {
                     if (!isSelected) {
                       e.currentTarget.style.color = '#ffffff';
@@ -251,6 +257,7 @@ export const LearningPanel: React.FC<LearningPanelProps> = ({
                   }}
                 >
                   <button
+                    type="button"
                     onClick={() => togglePrereq(p.id)}
                     style={{
                       background: 'transparent',
@@ -261,9 +268,11 @@ export const LearningPanel: React.FC<LearningPanelProps> = ({
                       marginTop: '2px',
                       transition: 'all 0.15s ease'
                     }}
+                    aria-label={`Mark ${p.title} as ${isDone ? 'pending' : 'understood'}`}
+                    aria-pressed={isDone}
                     title={isDone ? 'Mark as pending' : 'Mark as understood'}
                   >
-                    {isDone ? <CheckSquare size={18} color="#ffffff" /> : <Square size={18} />}
+                    {isDone ? <CheckSquare size={18} color="#ffffff" aria-hidden="true" /> : <Square size={18} aria-hidden="true" />}
                   </button>
 
                   <div style={{ flex: 1 }}>

@@ -188,7 +188,17 @@ export const GapsSection: React.FC<GapsSectionProps> = ({ gaps }) => {
                       return (
                         <div
                           key={sIdx}
+                          role="checkbox"
+                          tabIndex={0}
+                          aria-checked={isDone}
+                          aria-label={`Checklist action: ${step}`}
                           onClick={() => toggleAction(gap.field_id, sIdx)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              toggleAction(gap.field_id, sIdx);
+                            }
+                          }}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -197,13 +207,14 @@ export const GapsSection: React.FC<GapsSectionProps> = ({ gaps }) => {
                             fontSize: '0.8rem',
                             color: isDone ? '#52525b' : '#e4e4e7',
                             textDecoration: isDone ? 'line-through' : 'none',
-                            transition: 'all 0.15s ease'
+                            transition: 'all 0.15s ease',
+                            outline: 'none'
                           }}
                         >
                           {isDone ? (
-                            <CheckSquare size={15} color="#ffffff" />
+                            <CheckSquare size={15} color="#ffffff" aria-hidden="true" />
                           ) : (
-                            <Square size={15} color="#71717a" />
+                            <Square size={15} color="#71717a" aria-hidden="true" />
                           )}
                           <span>{step}</span>
                         </div>

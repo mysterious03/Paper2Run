@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { BlueprintField } from '../types';
 import { BookOpen, FileSearch, CheckCircle, AlertTriangle, HelpCircle, Layers, ExternalLink } from 'lucide-react';
 
@@ -27,20 +27,22 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
     { id: 'environment', label: 'Environment' }
   ];
 
-  const filteredFields = fields.filter((f) => {
-    const matchesCategory =
-      selectedCategory === 'all' ||
-      f.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
-      (selectedCategory === 'optimizer' && f.category.includes('schedule')) ||
-      (selectedCategory === 'dataset' && f.category.includes('preprocessing'));
+  const filteredFields = useMemo(() => {
+    return (fields || []).filter((f) => {
+      const matchesCategory =
+        selectedCategory === 'all' ||
+        f.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+        (selectedCategory === 'optimizer' && f.category.includes('schedule')) ||
+        (selectedCategory === 'dataset' && f.category.includes('preprocessing'));
 
-    const matchesSearch =
-      f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (f.value && f.value.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      f.status.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (f.value && f.value.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        f.status.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesCategory && matchesSearch;
-  });
+      return matchesCategory && matchesSearch;
+    });
+  }, [fields, selectedCategory, searchQuery]);
 
   const getStatusBadge = (status: string) => {
     const formatted = status.replace('_', ' ');
@@ -48,7 +50,7 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
   };
 
   return (
-    <div style={{ marginBottom: '32px' }}>
+    <section aria-labelledby="blueprint-heading" style={{ marginBottom: '32px' }}>
       {/* Section Header & Filters */}
       <div style={{
         display: 'flex',
@@ -59,16 +61,20 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
         marginBottom: '16px'
       }}>
         <div>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.02em' }}>
-            Structured Experiment Blueprint
+          <h2 id="blueprint-heading" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.02em' }}>
+            Step 2: Structured Experiment Blueprint
           </h2>
           <p style={{ fontSize: '0.76rem', color: '#71717a' }}>
-            Evidence-backed parameters verified against raw PDF source text.
+            Evidence-backed parameters verified against raw PDF source text. Click <strong>Proof</strong> for verbatim quotes or <strong>Learn</strong> for derivations.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <label htmlFor="param-filter-input" className="sr-only">
+            Filter parameters
+          </label>
           <input
+            id="param-filter-input"
             type="text"
             placeholder="Search parameters..."
             value={searchQuery}
@@ -88,8 +94,8 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
         </div>
       </div>
 
-      {/* Category Pills - Sleek Minimalist Controls */}
-      <div style={{
+      {/* Category Pills */}
+      <div role="group" aria-label="Filter parameters by category" style={{
         display: 'flex',
         gap: '5px',
         overflowX: 'auto',
@@ -101,6 +107,7 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
           return (
             <button
               key={c.id}
+              type="button"
               onClick={() => setSelectedCategory(c.id)}
               style={{
                 background: isSelected ? '#ffffff' : '#0d0d0d',
@@ -115,20 +122,7 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
                 transition: 'all 0.15s ease',
                 boxShadow: isSelected ? '0 1px 6px rgba(255,255,255,0.2)' : 'none'
               }}
-              onMouseEnter={(e) => {
-                if (!isSelected) {
-                  e.currentTarget.style.color = '#ffffff';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                  e.currentTarget.style.background = '#141414';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isSelected) {
-                  e.currentTarget.style.color = '#a1a1aa';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                  e.currentTarget.style.background = '#0d0d0d';
-                }
-              }}
+              aria-pressed={isSelected}
             >
               {c.label}
             </button>
@@ -139,6 +133,9 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
       {/* Blueprint Spec Sheet Table */}
       <div className="glass-panel" style={{ overflow: 'hidden', background: '#0a0a0a' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
+          <caption className="sr-only">
+            Extracted Research Paper Blueprint Parameters with Status and Provenance
+          </caption>
           <thead>
             <tr style={{
               background: '#070707',
@@ -148,15 +145,15 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
               textTransform: 'uppercase',
               letterSpacing: '0.05em'
             }}>
-              <th style={{ padding: '12px 16px', width: '22%' }}>Parameter</th>
-              <th style={{ padding: '12px 16px', width: '28%' }}>Extracted Value</th>
-              <th style={{ padding: '12px 16px', width: '15%' }}>Status</th>
-              <th style={{ padding: '12px 16px', width: '23%' }}>Source Provenance</th>
-              <th style={{ padding: '12px 16px', width: '12%', textAlign: 'right' }}>Actions</th>
+              <th scope="col" style={{ padding: '12px 16px', width: '22%' }}>Parameter</th>
+              <th scope="col" style={{ padding: '12px 16px', width: '28%' }}>Extracted Value</th>
+              <th scope="col" style={{ padding: '12px 16px', width: '15%' }}>Status</th>
+              <th scope="col" style={{ padding: '12px 16px', width: '23%' }}>Source Provenance</th>
+              <th scope="col" style={{ padding: '12px 16px', width: '12%', textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredFields.map((field) => {
+            {filteredFields.map((field, idx) => {
               const hasEvidence = field.evidence && field.evidence.length > 0;
               const firstEvidence = hasEvidence ? field.evidence[0] : null;
 
@@ -174,9 +171,10 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
                     e.currentTarget.style.background = 'transparent';
                   }}
                 >
-                  {/* Field Name & Category */}
+                  {/* Parameter Name & Category */}
                   <td style={{ padding: '12px 16px', verticalAlign: 'top' }}>
                     <div style={{ fontWeight: 600, color: '#ffffff', marginBottom: '2px', letterSpacing: '-0.01em' }}>
+                      <span style={{ color: '#71717a', marginRight: '6px', fontSize: '0.74rem' }}>{idx + 1}.</span>
                       {field.name}
                     </div>
                     <span style={{
@@ -252,7 +250,7 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
                           }}>
                             p.{firstEvidence.page_index}
                           </span>
-                          <span style={{ fontWeight: 500 }}>{firstEvidence.section}</span>
+                          <span style={{ fontWeight: 500 }}>{firstEvidence.section || 'Main Text'}</span>
                         </div>
                         <p style={{
                           fontSize: '0.73rem',
@@ -279,6 +277,7 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
                   <td style={{ padding: '12px 16px', verticalAlign: 'top', textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
                       <button
+                        type="button"
                         onClick={() => onSelectFieldForLearn(field)}
                         className="btn-ghost"
                         style={{
@@ -287,24 +286,16 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
                           border: '1px solid rgba(255, 255, 255, 0.15)',
                           borderRadius: '4px'
                         }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = '#ffffff';
-                          e.currentTarget.style.color = '#000000';
-                          e.currentTarget.style.borderColor = '#ffffff';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
-                          e.currentTarget.style.color = '#a1a1aa';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                        }}
+                        aria-label={`Open interactive 3-tier explanation for ${field.name}`}
                         title="Open interactive 3-tier explanation"
                       >
-                        <BookOpen size={13} />
+                        <BookOpen size={13} aria-hidden="true" />
                         <span>Learn</span>
                       </button>
 
                       {hasEvidence && (
                         <button
+                          type="button"
                           onClick={() => onSelectFieldForEvidence(field)}
                           className="btn-ghost"
                           style={{
@@ -313,19 +304,10 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
                             border: '1px solid rgba(255, 255, 255, 0.15)',
                             borderRadius: '4px'
                           }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = '#ffffff';
-                            e.currentTarget.style.color = '#000000';
-                            e.currentTarget.style.borderColor = '#ffffff';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'transparent';
-                            e.currentTarget.style.color = '#a1a1aa';
-                            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                          }}
+                          aria-label={`Inspect verified quote in source PDF for ${field.name}`}
                           title="View verified verbatim quote in document context"
                         >
-                          <FileSearch size={13} />
+                          <FileSearch size={13} aria-hidden="true" />
                           <span>Proof</span>
                         </button>
                       )}
@@ -337,6 +319,6 @@ export const BlueprintSection: React.FC<BlueprintSectionProps> = ({
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   );
 };

@@ -3,46 +3,59 @@ import { PaperOverview } from '../types';
 import { Target, Lightbulb, Cpu, Award, AlertCircle } from 'lucide-react';
 
 interface OverviewSectionProps {
-  overview: PaperOverview;
+  overview?: PaperOverview;
 }
 
 export const OverviewSection: React.FC<OverviewSectionProps> = ({ overview }) => {
+  const safeOverview = overview || {
+    research_problem: 'Not explicitly identified in examined text.',
+    motivation_and_method: 'Not explicitly identified in examined text.',
+    main_architecture: 'Not explicitly identified in examined text.',
+    main_results: 'Not explicitly identified in examined text.',
+    limitations_and_questions: 'No explicit limitations reported.'
+  };
+
   const cards = [
     {
+      step: '1',
       title: 'Problem & Objective',
-      content: overview.research_problem,
-      icon: <Target size={16} color="#ffffff" />,
+      content: safeOverview.research_problem,
+      icon: <Target size={16} color="#ffffff" aria-hidden="true" />,
     },
     {
+      step: '2',
       title: 'Proposed Method & Motivation',
-      content: overview.motivation_and_method,
-      icon: <Lightbulb size={16} color="#ffffff" />,
+      content: safeOverview.motivation_and_method,
+      icon: <Lightbulb size={16} color="#ffffff" aria-hidden="true" />,
     },
     {
+      step: '3',
       title: 'Main Model Architecture',
-      content: overview.main_architecture,
-      icon: <Cpu size={16} color="#ffffff" />,
+      content: safeOverview.main_architecture,
+      icon: <Cpu size={16} color="#ffffff" aria-hidden="true" />,
     },
     {
+      step: '4',
       title: 'Experimental Findings',
-      content: overview.main_results,
-      icon: <Award size={16} color="#ffffff" />,
+      content: safeOverview.main_results,
+      icon: <Award size={16} color="#ffffff" aria-hidden="true" />,
     },
     {
+      step: '5',
       title: 'Limitations & Uncertainties',
-      content: overview.limitations_and_questions,
-      icon: <AlertCircle size={16} color="#ffffff" />,
+      content: safeOverview.limitations_and_questions,
+      icon: <AlertCircle size={16} color="#ffffff" aria-hidden="true" />,
     },
   ];
 
   return (
-    <div style={{ marginBottom: '28px' }}>
+    <section aria-labelledby="overview-heading" style={{ marginBottom: '28px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-        <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.02em' }}>
+        <h2 id="overview-heading" style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.02em' }}>
           Executive Research Overview
         </h2>
         <span style={{ fontSize: '0.72rem', color: '#71717a' }}>
-          (Grounded in extracted paper evidence)
+          (5-point evidence synthesis grounded in paper text)
         </span>
       </div>
 
@@ -51,9 +64,9 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ overview }) =>
         gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
         gap: '12px'
       }}>
-        {cards.map((card, idx) => (
-          <div
-            key={idx}
+        {cards.map((card) => (
+          <article
+            key={card.step}
             className="glass-card"
             style={{
               padding: '16px',
@@ -78,6 +91,7 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ overview }) =>
                 {card.icon}
               </div>
               <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em' }}>
+                <span style={{ color: '#71717a', marginRight: '4px' }}>{card.step}.</span>
                 {card.title}
               </h3>
             </div>
@@ -89,9 +103,9 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ overview }) =>
             }}>
               {card.content}
             </p>
-          </div>
+          </article>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
