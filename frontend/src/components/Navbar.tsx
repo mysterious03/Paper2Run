@@ -6,7 +6,7 @@ import { getExportUrl } from '../lib/api';
 interface NavbarProps {
   currentPaper: AnalysisResult | null;
   onOpenUpload: () => void;
-  onLoadSample: () => void;
+  onLoadSample: (paperType?: 'transformer' | 'lora') => void;
   llmProvider: string;
   isLLMConfigured: boolean;
   activeTab: 'blueprint' | 'learn' | 'connections' | 'verify';
@@ -140,15 +140,25 @@ export const Navbar: React.FC<NavbarProps> = ({
           <span>{llmProvider}</span>
         </div>
 
-        {/* Sample Paper Loader */}
-        <button
-          onClick={onLoadSample}
-          className="btn-secondary"
-          title="Load precomputed Vaswani et al. Attention Is All You Need sample"
+        {/* Sample Paper Selector */}
+        <select
+          onChange={(e) => onLoadSample(e.target.value as any)}
+          style={{
+            background: 'rgba(30, 41, 59, 0.7)',
+            color: '#38bdf8',
+            border: '1px solid var(--border-accent)',
+            borderRadius: '8px',
+            padding: '7px 10px',
+            fontSize: '0.78rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            outline: 'none'
+          }}
+          defaultValue="transformer"
         >
-          <Sparkles size={14} color="#38bdf8" />
-          <span>Sample Demo</span>
-        </button>
+          <option value="transformer">⭐ Sample 1: Transformer (2017)</option>
+          <option value="lora">⚡ Sample 2: LoRA PEFT (2021)</option>
+        </select>
 
         {/* Upload Paper */}
         <button
@@ -180,6 +190,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Download structured JSON blueprint (retains nulls for gaps)"
             >
               <span>JSON</span>
+            </a>
+            <a
+              href={getExportUrl(paperId, 'yaml')}
+              download
+              className="btn-secondary"
+              style={{ textDecoration: 'none' }}
+              title="Download structured YAML blueprint"
+            >
+              <span>YAML</span>
             </a>
             <a
               href={getExportUrl(paperId, 'checklist')}

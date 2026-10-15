@@ -446,3 +446,227 @@ def get_sample_document_pages() -> list[DocumentPage]:
             has_text=True
         ) for i, t in enumerate(pages_text)
     ]
+
+def get_lora_sample_analysis() -> AnalysisResult:
+    paper_id = "sample_hu_lora_2021"
+
+    overview = PaperOverview(
+        research_problem="Fine-tuning massive pre-trained language models (such as GPT-3 175B) is computationally prohibitive because it requires updating and storing all parameters for each downstream task, creating extreme storage and deployment bottlenecks.",
+        motivation_and_method="Low-Rank Adaptation (LoRA) freezes pre-trained model weights and injects trainable rank-decomposition matrices into each layer of the Transformer architecture, greatly reducing the number of trainable parameters for downstream tasks by up to 10,000x.",
+        main_architecture="Decomposes weight updates W = W_0 + \\Delta W where \\Delta W = B \\cdot A with B \\in \\mathbb{R}^{d \\times r}, A \\in \\mathbb{R}^{r \\times k}, and rank r \\ll \\min(d, k). Applied to query (W_q) and value (W_v) projection matrices in multi-head self-attention.",
+        main_results="LoRA matches or outperforms full fine-tuning on GLUE benchmarks with RoBERTa/DeBERTa and on WikiSQL/SAMSum with GPT-3 175B, while reducing trainable parameters by 10,000x and GPU memory footprint by up to 3x.",
+        limitations_and_questions="Exact inference batching latency when serving multiple distinct LoRA adapters simultaneously without weight merging. Learning rate sensitivity to scaling constant alpha / rank ratio is omitted in some task setups."
+    )
+
+    metadata = PaperMetadata(
+        paper_id=paper_id,
+        filename="lora_low_rank_adaptation.pdf",
+        title="LoRA: Low-Rank Adaptation of Large Language Models (Hu et al., 2021)",
+        page_count=26,
+        created_at="2026-10-15T12:00:00Z",
+        status="analyzed",
+        is_sample_demo=True,
+        overview=overview,
+        total_fields=12,
+        reported_fields=9,
+        unresolved_gaps=3
+    )
+
+    blueprint: list[BlueprintField] = [
+        BlueprintField(
+            id="field_lora_arch",
+            name="Rank Decomposition Matrices",
+            category="model_architecture",
+            value="r = 4 or 8 with scale alpha = 16 or 32",
+            status="reported",
+            document_id=paper_id,
+            evidence=[
+                EvidenceItem(
+                    evidence_id="ev_lora_arch",
+                    page_index=3,
+                    section="4.1 Low-Rank Parameterized Update Matrices",
+                    quote="We use a random Gaussian initialization for A and zero for B, so \\Delta W = BA is zero at the beginning of training. We then scale \\Delta Wx by \\alpha / r, where \\alpha is a constant in r.",
+                    quote_match=True,
+                    semantic_support="verified"
+                )
+            ],
+            notes=["Initialized with A ~ N(0, 1/r) and B = 0 so initial delta W is zero."],
+            relationships=["node_lora_method", "node_lora_matrix"]
+        ),
+        BlueprintField(
+            id="field_lora_targets",
+            name="Target Weight Matrices",
+            category="model_architecture",
+            value="Attention query (W_q) and value (W_v) projections only",
+            status="reported",
+            document_id=paper_id,
+            evidence=[
+                EvidenceItem(
+                    evidence_id="ev_lora_targets",
+                    page_index=4,
+                    section="4.2 Applying LoRA to Transformer",
+                    quote="In this paper, we limit our study to only adapting the attention weights for downstream tasks and freeze the MLP modules (so they are not trained in downstream tasks) for simplicity and parameter efficiency.",
+                    quote_match=True,
+                    semantic_support="verified"
+                )
+            ],
+            notes=["Adapting both W_q and W_v yields best trade-off between parameter budget and accuracy."],
+            relationships=["node_lora_matrix"]
+        ),
+        BlueprintField(
+            id="field_lora_optimizer",
+            name="Optimizer",
+            category="optimizer",
+            value="AdamW with linear learning rate warmup and decay",
+            status="reported",
+            document_id=paper_id,
+            evidence=[
+                EvidenceItem(
+                    evidence_id="ev_lora_opt",
+                    page_index=7,
+                    section="5 Experiments and Setup",
+                    quote="We optimize using AdamW with a linear learning rate decay schedule and a warmup ratio of 0.1.",
+                    quote_match=True,
+                    semantic_support="verified"
+                )
+            ],
+            notes=["Standard AdamW weight decay applied only to trainable parameters A and B."],
+            relationships=["node_lora_opt"]
+        ),
+        BlueprintField(
+            id="field_lora_lr",
+            name="Learning Rate",
+            category="learning_rate_schedule",
+            value="2e-4 for GPT-3; 5e-4 for RoBERTa/DeBERTa",
+            status="reported",
+            document_id=paper_id,
+            evidence=[
+                EvidenceItem(
+                    evidence_id="ev_lora_lr",
+                    page_index=8,
+                    section="5.1 RoBERTa and DeBERTa Setup",
+                    quote="For LoRA, we use a learning rate of 5e-4 on most GLUE tasks, which is notably higher than the learning rates typically used for full fine-tuning (1e-5 to 3e-5).",
+                    quote_match=True,
+                    semantic_support="verified"
+                )
+            ],
+            notes=["LoRA typically tolerates and requires much higher learning rates than full fine-tuning."],
+            relationships=["node_lora_opt"]
+        ),
+        BlueprintField(
+            id="field_lora_rank_sweep",
+            name="Optimal Intrinsic Rank Gap",
+            category="model_architecture",
+            value=None,
+            status="ambiguous",
+            document_id=paper_id,
+            evidence=[
+                EvidenceItem(
+                    evidence_id="ev_lora_rank",
+                    page_index=11,
+                    section="7.1 Which Weight Matrices in Transformer Should We Apply LoRA To?",
+                    quote="Setting r = 1 or r = 2 performs surprisingly well on WikiSQL, suggesting that the update matrix \\Delta W might have a very small intrinsic rank.",
+                    quote_match=True,
+                    semantic_support="needs_review"
+                )
+            ],
+            notes=["The paper shows r=1 or 2 suffices for WikiSQL, but recommends r=8 for SAMSum dialogue generation without giving a general formula for task complexity."],
+            relationships=["node_lora_gap_rank"]
+        ),
+        BlueprintField(
+            id="field_lora_dropout",
+            name="LoRA Layer Dropout",
+            category="training_setup",
+            value="p = 0.1 for LoRA matrices A and B",
+            status="reported",
+            document_id=paper_id,
+            evidence=[
+                EvidenceItem(
+                    evidence_id="ev_lora_drop",
+                    page_index=8,
+                    section="5.1 RoBERTa Setup",
+                    quote="We use a dropout probability of 0.1 for LoRA layers.",
+                    quote_match=True,
+                    semantic_support="verified"
+                )
+            ],
+            notes=[],
+            relationships=["node_lora_matrix"]
+        ),
+        BlueprintField(
+            id="field_lora_multi_adapter_latency",
+            name="Multi-Tenant Serving Overhead",
+            category="environment",
+            value=None,
+            status="not_found",
+            document_id=paper_id,
+            evidence=[],
+            notes=["The paper claims zero inference latency after weight merging W = W0 + BA, but does not report memory or latency benchmarks when serving multiple concurrent tasks dynamically without merging."],
+            relationships=["node_lora_gap_serving"]
+        )
+    ]
+
+    nodes: list[GraphNode] = [
+        GraphNode(id="node_lora_obj", type="research_objective", label="Parameter-Efficient Adaptation", status="reported", value="Overcome 175B fine-tuning barrier"),
+        GraphNode(id="node_lora_method", type="method", label="LoRA Weight Injection", status="reported", value="Delta W = B * A with r << d"),
+        GraphNode(id="node_lora_matrix", type="model_architecture", label="Query & Value Projections", status="reported", value="W_q and W_v with rank r=8, alpha=32"),
+        GraphNode(id="node_lora_opt", type="optimizer", label="AdamW with Higher LR", status="reported", value="lr=5e-4, weight_decay=0.01"),
+        GraphNode(id="node_lora_gap_rank", type="reproduction_gap", label="Intrinsic Rank Selection Heuristic", status="ambiguous", value="Task-dependent intrinsic rank bounds"),
+        GraphNode(id="node_lora_gap_serving", type="reproduction_gap", label="Dynamic Multi-Tenant Latency", status="not_found", value="Unmeasured unmerged adapter routing")
+    ]
+
+    edges: list[GraphEdge] = [
+        GraphEdge(id="lora_e1", source="node_lora_obj", target="node_lora_method", type="motivates", provenance_type="explicit", label="motivates low-rank bottleneck"),
+        GraphEdge(id="lora_e2", source="node_lora_method", target="node_lora_matrix", type="uses_method", provenance_type="explicit", label="applied to W_q and W_v"),
+        GraphEdge(id="lora_e3", source="node_lora_matrix", target="node_lora_opt", type="optimized_with", provenance_type="explicit", label="optimized with AdamW"),
+        GraphEdge(id="lora_e4", source="node_lora_matrix", target="node_lora_gap_rank", type="blocked_by", provenance_type="inferred", label="unclear rank scaling rule"),
+        GraphEdge(id="lora_e5", source="node_lora_method", target="node_lora_gap_serving", type="blocked_by", provenance_type="inferred", label="unspecified concurrent serving latency")
+    ]
+
+    graph = ResearchGraph(document_id=paper_id, nodes=nodes, edges=edges)
+
+    gaps: list[GapItem] = [
+        GapItem(
+            field_id="field_lora_rank_sweep",
+            field_name="Optimal Intrinsic Rank Selection Heuristic",
+            category="model_architecture",
+            status="ambiguous",
+            missing_explanation="The authors show that r=1 or r=2 suffices for classification/WikiSQL, but r=8 or r=64 was used for dialogue without specifying how to choose rank r a priori for custom datasets.",
+            why_it_matters="Setting rank r too high wastes VRAM and risks overfitting on small tasks, whereas setting r too low causes underfitting and degradation compared to full fine-tuning.",
+            examined_sections=["Section 4.1 Low-Rank Matrices", "Section 7.1 Parameter Budget"],
+            recommended_actions=[
+                "Start with rank r=8 and alpha=16 as a universal baseline.",
+                "Conduct a 3-point grid search: r in {4, 8, 16}.",
+                "Keep ratio alpha / r = 2.0 to maintain uniform gradient scaling."
+            ],
+            suggested_candidate_value="r = 8, alpha = 16 (alpha/r = 2.0 scaling)",
+            candidate_rationale="HuggingFace PEFT standard default providing robust convergence across both classification and generative tasks.",
+            candidate_source="HuggingFace PEFT library standard convention"
+        ),
+        GapItem(
+            field_id="field_lora_multi_adapter_latency",
+            field_name="Dynamic Multi-Tenant Serving Latency",
+            category="environment",
+            status="not_found",
+            missing_explanation="The paper highlights zero inference latency when weights are folded (W = W0 + BA), but does not report throughput or VRAM penalties when dynamically switching between multiple adapters in real-time.",
+            why_it_matters="If your deployment requires serving 100 different user adapters on a single GPU node, you cannot merge weights into W0 permanently. Unmerged execution requires extra matrix additions that can induce memory bandwidth overhead.",
+            examined_sections=["Section 4.1 Zero Inference Overhead", "Section 6 Practical Deployment"],
+            recommended_actions=[
+                "Benchmark S-LoRA or vLLM multi-adapter batching kernels.",
+                "If deploying a single task, always call model.merge_and_unload() before production serving."
+            ],
+            suggested_candidate_value="Call peft_model.merge_and_unload() for single-task; use vLLM Punica kernels for multi-tenant serving",
+            candidate_rationale="Eliminates the intermediate activation overhead during inference.",
+            candidate_source="vLLM & S-LoRA production benchmarks"
+        )
+    ]
+
+    return AnalysisResult(
+        paper_id=paper_id,
+        metadata=metadata,
+        overview=overview,
+        blueprint=blueprint,
+        graph=graph,
+        gaps=gaps
+    )
+

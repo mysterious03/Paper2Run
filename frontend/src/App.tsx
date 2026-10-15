@@ -36,9 +36,9 @@ export const App: React.FC = () => {
     loadSampleDemo();
   }, []);
 
-  const loadSampleDemo = () => {
+  const loadSampleDemo = (paperType: 'transformer' | 'lora' = 'transformer') => {
     setLoading(true);
-    fetchSamplePaper()
+    fetchSamplePaper(paperType)
       .then((data) => {
         setCurrentPaper(data);
         if (data.blueprint && data.blueprint.length > 0) {
@@ -160,7 +160,7 @@ export const App: React.FC = () => {
             <p style={{ color: 'var(--text-muted)', marginBottom: '18px' }}>
               Upload an AI/ML PDF or explore the pre-loaded sample experiment.
             </p>
-            <button onClick={loadSampleDemo} className="btn-primary">
+            <button onClick={() => loadSampleDemo('transformer')} className="btn-primary">
               Load Sample Demo
             </button>
           </div>

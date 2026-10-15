@@ -8,9 +8,15 @@ export async function checkHealth() {
   return res.json();
 }
 
-export async function fetchSamplePaper(): Promise<AnalysisResult> {
-  const res = await fetch(`${BASE_URL}/sample`);
+export async function fetchSamplePaper(paperType: 'transformer' | 'lora' = 'transformer'): Promise<AnalysisResult> {
+  const res = await fetch(`${BASE_URL}/sample?paper=${paperType}`);
   if (!res.ok) throw new Error('Failed to fetch sample paper');
+  return res.json();
+}
+
+export async function fetchSampleList(): Promise<Array<{ id: string; paper_id: string; title: string; domain: string; gaps: number }>> {
+  const res = await fetch(`${BASE_URL}/sample/list`);
+  if (!res.ok) throw new Error('Failed to fetch sample list');
   return res.json();
 }
 

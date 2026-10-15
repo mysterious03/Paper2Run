@@ -21,7 +21,7 @@ from .services.pdf_parser import PDFParser, PDFParseException
 from .services.extraction import ExtractionService
 from .services.learning import LearningService
 from .services.export_service import ExportService
-from .services.sample_data import get_sample_analysis, get_sample_document_pages
+from .services.sample_data import get_sample_analysis, get_sample_document_pages, get_lora_sample_analysis
 
 app = FastAPI(
     title="Paper2Run API",
@@ -42,10 +42,15 @@ app.add_middleware(
 PAPERS_STORE: Dict[str, AnalysisResult] = {}
 PAGES_STORE: Dict[str, list[DocumentPage]] = {}
 
-# Preload sample analysis
-sample_analysis = get_sample_analysis()
-PAPERS_STORE[sample_analysis.paper_id] = sample_analysis
-PAGES_STORE[sample_analysis.paper_id] = get_sample_document_pages()
+# Preload sample analyses
+sample_transformer = get_sample_analysis()
+sample_lora = get_lora_sample_analysis()
+
+PAPERS_STORE[sample_transformer.paper_id] = sample_transformer
+PAPERS_STORE[sample_lora.paper_id] = sample_lora
+
+PAGES_STORE[sample_transformer.paper_id] = get_sample_document_pages()
+PAGES_STORE[sample_lora.paper_id] = []
 
 extraction_service = ExtractionService()
 learning_service = LearningService()
@@ -65,10 +70,31 @@ def health_check():
         "llm_configured": extraction_service.llm_client.is_configured()
     }
 
+@app.get("/api/sample/list")
+def list_samples():
+    return [
+        {
+            "id": "transformer",
+            "paper_id": sample_transformer.paper_id,
+            "title": "Attention Is All You Need (Vaswani et al., 2017)",
+            "domain": "Sequence Transduction / Transformer",
+            "gaps": 3
+        },
+        {
+            "id": "lora",
+            "paper_id": sample_lora.paper_id,
+            "title": "LoRA: Low-Rank Adaptation (Hu et al., 2021)",
+            "domain": "Parameter-Efficient Fine-Tuning (PEFT)",
+            "gaps": 2
+        }
+    ]
+
 @app.get("/api/sample")
-def get_sample():
-    """Returns the pre-loaded Vaswani et al. Transformer sample analysis."""
-    return sample_analysis
+def get_sample(paper: Optional[str] = Query("transformer")):
+    """Returns sample benchmark analysis (transformer or lora)."""
+    if paper == "lora":
+        return sample_lora
+    return sample_transformer
 
 @app.post("/api/papers")
 async def upload_paper(file: UploadFile = File(...)):
