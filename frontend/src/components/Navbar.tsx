@@ -28,7 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const tabs: Array<{ id: 'blueprint' | 'learn' | 'connections' | 'verify' | 'export'; label: string; badge?: string }> = [
     { id: 'blueprint', label: '1. Blueprint' },
-    { id: 'learn', label: '2. Learn' },
+    { id: 'learn', label: '2. Code & Lab (PyTorch)' },
     { id: 'connections', label: '3. Topology' },
     { id: 'verify', label: '4. Gaps & Fixes' },
     { id: 'export', label: '5. Export & Run' }
